@@ -34,6 +34,15 @@ Route::get('/run-migrations', function () {
     }
 });
 
+Route::get('/run-seed', function () {
+    try {
+        \Illuminate\Support\Facades\Artisan::call('db:seed', ['--force' => true]);
+        return 'Database seeded successfully! Admin user and products have been created. <br> Output: ' . \Illuminate\Support\Facades\Artisan::output();
+    } catch (\Exception $e) {
+        return 'Error: ' . $e->getMessage();
+    }
+});
+
 Route::get('/run-setup', function () {
     try {
         \Illuminate\Support\Facades\Artisan::call('key:generate', ['--force' => true]);

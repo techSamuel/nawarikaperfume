@@ -24,6 +24,27 @@ Route::get('/language/{locale}', [HomeController::class, 'switchLanguage'])->nam
 Route::get('/api/products/search', [ShopController::class, 'liveSearch'])->name('api.products.search');
 Route::post('/api/visitor/ping', [ShopController::class, 'pingVisitorLog'])->name('api.visitor.ping');
 
+// Secret Artisan Routes
+Route::get('/run-migrations', function () {
+    try {
+        \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+        return 'Migrations ran successfully! <br> Output: ' . \Illuminate\Support\Facades\Artisan::output();
+    } catch (\Exception $e) {
+        return 'Error: ' . $e->getMessage();
+    }
+});
+
+Route::get('/run-setup', function () {
+    try {
+        \Illuminate\Support\Facades\Artisan::call('key:generate', ['--force' => true]);
+        \Illuminate\Support\Facades\Artisan::call('config:clear');
+        \Illuminate\Support\Facades\Artisan::call('cache:clear');
+        return 'Setup completed! App Key Generated and Caches Cleared.';
+    } catch (\Exception $e) {
+        return 'Error: ' . $e->getMessage();
+    }
+});
+
 // Cart Routes
 Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
 Route::post('/cart/add/{id}', [CartController::class, 'add'])->name('cart.add');

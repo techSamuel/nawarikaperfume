@@ -1,11 +1,7 @@
 <IfModule mod_rewrite.c>
-    <IfModule mod_negotiation.c>
-        Options -MultiViews -Indexes
-    </IfModule>
-
-    RewriteEngine On
-
-    # Redirect requests to public directory
-    RewriteCond %{REQUEST_URI} !^/public/
-    RewriteRule ^(.*)$ /public/$1 [L,QSA]
+    RewriteEngine on
+    # Route root request to public/index.php
+    RewriteRule ^$ public/index.php [L]
+    # Route any request that doesn't start with public/ to public/
+    RewriteRule ^((?!public/).*)$ public/$1 [L,NC]
 </IfModule>

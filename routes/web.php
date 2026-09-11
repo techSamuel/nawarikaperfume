@@ -54,6 +54,19 @@ Route::get('/run-setup', function () {
     }
 });
 
+Route::get('/fix-storage', function () {
+    $targetFolder = storage_path('app/public');
+    $linkFolder = $_SERVER['DOCUMENT_ROOT'] . '/storage';
+    
+    if (file_exists($linkFolder)) {
+        unlink($linkFolder);
+    }
+    
+    symlink($targetFolder, $linkFolder);
+    
+    return 'Storage link fixed! Check your images now.';
+});
+
 // Cart Routes
 Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
 Route::post('/cart/add/{id}', [CartController::class, 'add'])->name('cart.add');

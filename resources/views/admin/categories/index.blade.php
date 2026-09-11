@@ -19,7 +19,7 @@
                             <td>
                                 <div class="table-product-image">
                                     @if($category->image)
-                                        <img src="{{ asset('storage/' . $category->image) }}" alt="">
+                                        <img src="{{ asset('uploads/' . $category->image) }}" alt="">
                                     @else
                                         <div class="img-placeholder" style="font-size:1rem;">📂</div>
                                     @endif

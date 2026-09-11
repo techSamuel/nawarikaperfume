@@ -45,7 +45,7 @@
             <div style="text-align: center; margin-bottom: 24px;">
                 <a href="{{ route('home') }}" class="navbar-brand" style="display: inline-flex; align-items: center; justify-content: center; gap: 10px; text-decoration: none;">
                     @if(isset($settings['site_logo']) && $settings['site_logo'])
-                        <img src="{{ asset('storage/' . $settings['site_logo']) }}" alt="{{ $settings['site_name'] ?? 'LUXE' }}" style="max-height: 54px; max-width: 220px; object-fit: contain;">
+                        <img src="{{ asset('uploads/' . $settings['site_logo']) }}" alt="{{ $settings['site_name'] ?? 'LUXE' }}" style="max-height: 54px; max-width: 220px; object-fit: contain;">
                     @else
                         <span style="font-size: 2rem; font-weight: 800; background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
                             {{ $settings['site_name'] ?? 'LUXE Store' }}

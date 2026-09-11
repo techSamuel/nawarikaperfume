@@ -12,7 +12,7 @@
                     <div class="cart-item">
                         <div class="cart-item-image">
                             @if($item['product']->image)
-                                <img src="{{ asset('storage/' . $item['product']->image) }}" alt="{{ $item['product']->name }}">
+                                <img src="{{ asset('uploads/' . $item['product']->image) }}" alt="{{ $item['product']->name }}">
                             @else
                                 <div class="img-placeholder">🛍️</div>
                             @endif

@@ -71,10 +71,10 @@
                         <div class="product-card animate-fade-in-up">
                             <a href="{{ route('product.show', $product->slug) }}" class="product-card-image" onmouseenter="let v=this.querySelector('video'); if(v) v.play()" onmouseleave="let v=this.querySelector('video'); if(v) { v.pause(); v.currentTime = 0; }">
                                 @if(is_array($product->videos) && count($product->videos) > 0)
-                                    <video src="{{ asset('storage/' . $product->videos[0]) }}" muted loop playsinline class="hover-video"></video>
+                                    <video src="{{ asset('uploads/' . $product->videos[0]) }}" muted loop playsinline class="hover-video"></video>
                                 @endif
                                 @if($product->image)
-                                    <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->translated_name }}">
+                                    <img src="{{ asset('uploads/' . $product->image) }}" alt="{{ $product->translated_name }}">
                                 @else
                                     <div class="img-placeholder">🛍️</div>
                                 @endif

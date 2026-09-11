@@ -88,7 +88,7 @@
         <div class="navbar-inner">
             <a href="{{ route('home') }}" class="navbar-brand">
                 @if(isset($settings['site_logo']) && $settings['site_logo'])
-                    <img src="{{ asset('storage/' . $settings['site_logo']) }}" alt="{{ $settings['site_name'] ?? 'LUXE' }}" style="height: 32px; display: inline-block;">
+                    <img src="{{ asset('uploads/' . $settings['site_logo']) }}" alt="{{ $settings['site_name'] ?? 'LUXE' }}" style="height: 32px; display: inline-block;">
                 @else
                     {{ $settings['site_name'] ?? 'LUXE' }}
                 @endif
@@ -98,7 +98,7 @@
                 <div class="sidebar-header" style="display: none;">
                     <a href="{{ route('home') }}" class="navbar-brand">
                         @if(isset($settings['site_logo']) && $settings['site_logo'])
-                            <img src="{{ asset('storage/' . $settings['site_logo']) }}" alt="{{ $settings['site_name'] ?? 'LUXE' }}" style="height: 32px; display: inline-block;">
+                            <img src="{{ asset('uploads/' . $settings['site_logo']) }}" alt="{{ $settings['site_name'] ?? 'LUXE' }}" style="height: 32px; display: inline-block;">
                         @else
                             {{ $settings['site_name'] ?? 'LUXE' }}
                         @endif
@@ -197,7 +197,7 @@
                 <div>
                     <div class="footer-brand">
                         @if(isset($settings['site_logo']) && $settings['site_logo'])
-                            <img src="{{ asset('storage/' . $settings['site_logo']) }}" alt="{{ $settings['site_name'] ?? 'LUXE' }}" style="height: 40px; margin-bottom: 16px;">
+                            <img src="{{ asset('uploads/' . $settings['site_logo']) }}" alt="{{ $settings['site_name'] ?? 'LUXE' }}" style="height: 40px; margin-bottom: 16px;">
                         @else
                             {{ $settings['site_name'] ?? 'LUXE' }}
                         @endif

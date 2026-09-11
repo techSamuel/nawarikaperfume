@@ -90,7 +90,7 @@
                             <div class="table-product">
                                 <div class="table-product-image">
                                     @if($item->product && $item->product->image)
-                                        <img src="{{ asset('storage/' . $item->product->image) }}" alt="">
+                                        <img src="{{ asset('uploads/' . $item->product->image) }}" alt="">
                                     @else
                                         <div class="img-placeholder" style="font-size:1rem;">📦</div>
                                     @endif

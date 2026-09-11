@@ -25,7 +25,7 @@
                 <label for="image">Image</label>
                 @if($category->image)
                     <div style="margin-bottom:8px;">
-                        <img src="{{ asset('storage/' . $category->image) }}" alt="" style="width:120px; height:120px; object-fit:cover; border-radius:var(--radius-md); border:1px solid var(--border-color);">
+                        <img src="{{ asset('uploads/' . $category->image) }}" alt="" style="width:120px; height:120px; object-fit:cover; border-radius:var(--radius-md); border:1px solid var(--border-color);">
                     </div>
                 @endif
                 <input type="file" id="image" name="image" class="form-control" accept="image/*">

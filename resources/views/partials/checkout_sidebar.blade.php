@@ -20,7 +20,7 @@
                     <div class="sidebar-cart-item">
                         <div class="sidebar-cart-item-img">
                             @if($item['product']->image)
-                                <img src="{{ asset('storage/' . $item['product']->image) }}" alt="">
+                                <img src="{{ asset('uploads/' . $item['product']->image) }}" alt="">
                             @else
                                 🛍️
                             @endif

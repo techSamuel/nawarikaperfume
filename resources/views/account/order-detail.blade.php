@@ -51,7 +51,7 @@
                                 <div style="display:flex; align-items:center; gap:12px;">
                                     @if($item->product && $item->product->image)
                                         <div style="width:45px; height:45px; border-radius:8px; overflow:hidden; background:var(--bg-tertiary);">
-                                            <img src="{{ asset('storage/' . $item->product->image) }}" alt="" style="width:100%; height:100%; object-fit:cover;">
+                                            <img src="{{ asset('uploads/' . $item->product->image) }}" alt="" style="width:100%; height:100%; object-fit:cover;">
                                         </div>
                                     @endif
                                     <span style="font-weight:600;">{{ $item->product_name }}</span>

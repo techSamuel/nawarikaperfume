@@ -43,7 +43,7 @@
                             <div class="hero-slide">
                                 {{-- Background image with Ken Burns --}}
                                 <div class="hero-slide-bg {{ $kenBurns ? 'kenburns' : '' }}" 
-                                     style="background-image: url('{{ asset('storage/' . $settings[$imgKey]) }}');"></div>
+                                     style="background-image: url('{{ asset('uploads/' . $settings[$imgKey]) }}');"></div>
 
                                 {{-- Overlay --}}
                                 @if($overlayStyle !== 'none')
@@ -152,10 +152,10 @@
                 <div class="product-card animate-fade-in-up">
                     <a href="{{ route('product.show', $product->slug) }}" class="product-card-image" onmouseenter="let v=this.querySelector('video'); if(v) v.play()" onmouseleave="let v=this.querySelector('video'); if(v) { v.pause(); v.currentTime = 0; }">
                         @if(is_array($product->videos) && count($product->videos) > 0)
-                            <video src="{{ asset('storage/' . $product->videos[0]) }}" muted loop playsinline class="hover-video"></video>
+                            <video src="{{ asset('uploads/' . $product->videos[0]) }}" muted loop playsinline class="hover-video"></video>
                         @endif
                         @if($product->image)
-                            <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->translated_name }}">
+                            <img src="{{ asset('uploads/' . $product->image) }}" alt="{{ $product->translated_name }}">
                         @else
                             <div class="img-placeholder">🛍️</div>
                         @endif
@@ -206,7 +206,7 @@
                 <a href="{{ route('shop', ['category' => $category->slug]) }}" class="category-card animate-fade-in-up">
                     <div class="category-card-bg">
                         @if($category->image)
-                            <img src="{{ asset('storage/' . $category->image) }}" alt="{{ $category->translated_name }}">
+                            <img src="{{ asset('uploads/' . $category->image) }}" alt="{{ $category->translated_name }}">
                         @else
                             <div class="img-placeholder" style="font-size:3rem;">📦</div>
                         @endif
@@ -235,10 +235,10 @@
                 <div class="product-card animate-fade-in-up">
                     <a href="{{ route('product.show', $product->slug) }}" class="product-card-image" onmouseenter="let v=this.querySelector('video'); if(v) v.play()" onmouseleave="let v=this.querySelector('video'); if(v) { v.pause(); v.currentTime = 0; }">
                         @if(is_array($product->videos) && count($product->videos) > 0)
-                            <video src="{{ asset('storage/' . $product->videos[0]) }}" muted loop playsinline class="hover-video"></video>
+                            <video src="{{ asset('uploads/' . $product->videos[0]) }}" muted loop playsinline class="hover-video"></video>
                         @endif
                         @if($product->image)
-                            <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->translated_name }}">
+                            <img src="{{ asset('uploads/' . $product->image) }}" alt="{{ $product->translated_name }}">
                         @else
                             <div class="img-placeholder">🛍️</div>
                         @endif

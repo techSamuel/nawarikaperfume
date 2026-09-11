@@ -51,7 +51,7 @@
                             <div style="display:flex; align-items:center; gap:12px; flex:1;">
                                 <div style="width:50px; height:50px; border-radius:8px; overflow:hidden; background:var(--bg-tertiary); flex-shrink:0;">
                                     @if($item['product']->image)
-                                        <img src="{{ asset('storage/' . $item['product']->image) }}" alt="" style="width:100%; height:100%; object-fit:cover;">
+                                        <img src="{{ asset('uploads/' . $item['product']->image) }}" alt="" style="width:100%; height:100%; object-fit:cover;">
                                     @else
                                         <div class="img-placeholder" style="font-size:1.2rem;">🛍️</div>
                                     @endif

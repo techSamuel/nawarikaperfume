@@ -7,15 +7,15 @@
     $mediaList = [];
     if (is_array($product->videos)) {
         foreach ($product->videos as $vid) {
-            $mediaList[] = ['type' => 'video', 'url' => asset('storage/' . $vid)];
+            $mediaList[] = ['type' => 'video', 'url' => asset('uploads/' . $vid)];
         }
     }
     if ($product->image) {
-        $mediaList[] = ['type' => 'image', 'url' => asset('storage/' . $product->image)];
+        $mediaList[] = ['type' => 'image', 'url' => asset('uploads/' . $product->image)];
     }
     if (is_array($product->gallery)) {
         foreach ($product->gallery as $gImg) {
-            $mediaList[] = ['type' => 'image', 'url' => asset('storage/' . $gImg)];
+            $mediaList[] = ['type' => 'image', 'url' => asset('uploads/' . $gImg)];
         }
     }
     $hasMedia = count($mediaList) > 0;
@@ -23,11 +23,11 @@
     // Structured Data for Google Rich Snippets
     $schemaImages = [];
     if ($product->image) {
-        $schemaImages[] = asset('storage/' . $product->image);
+        $schemaImages[] = asset('uploads/' . $product->image);
     }
     if (is_array($product->gallery)) {
         foreach ($product->gallery as $img) {
-            $schemaImages[] = asset('storage/' . $img);
+            $schemaImages[] = asset('uploads/' . $img);
         }
     }
     $schemaData = [
@@ -344,7 +344,7 @@
                         <div class="product-card">
                             <div class="product-card-image">
                                 @if($related->image)
-                                    <img src="{{ asset('storage/' . $related->image) }}" alt="{{ $related->name }}">
+                                    <img src="{{ asset('uploads/' . $related->image) }}" alt="{{ $related->name }}">
                                 @else
                                     <div class="img-placeholder">🛍️</div>
                                 @endif

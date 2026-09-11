@@ -63,7 +63,7 @@
                         <label for="image">Main Product Image *</label>
                         @if($product->image)
                             <div style="margin-bottom:8px;">
-                                <img src="{{ asset('storage/' . $product->image) }}" alt=""
+                                <img src="{{ asset('uploads/' . $product->image) }}" alt=""
                                     style="width:100px; height:100px; object-fit:cover; border-radius:var(--radius-md); border:1px solid var(--border-color);">
                             </div>
                         @endif
@@ -77,7 +77,7 @@
                         @if($product->gallery && count($product->gallery) > 0)
                             <div style="display: flex; gap: 8px; margin-bottom: 8px; flex-wrap: wrap;">
                                 @foreach($product->gallery as $img)
-                                    <img src="{{ asset('storage/' . $img) }}"
+                                    <img src="{{ asset('uploads/' . $img) }}"
                                         style="width:60px; height:60px; object-fit:cover; border-radius:4px; border:1px solid var(--border-color);">
                                 @endforeach
                             </div>
@@ -91,7 +91,7 @@
                         @if($product->videos && count($product->videos) > 0)
                             <div style="display: flex; gap: 8px; margin-bottom: 8px; flex-wrap: wrap;">
                                 @foreach($product->videos as $vid)
-                                    <video src="{{ asset('storage/' . $vid) }}"
+                                    <video src="{{ asset('uploads/' . $vid) }}"
                                         style="width:100px; height:60px; object-fit:cover; border-radius:4px; border:1px solid var(--border-color);"
                                         controls></video>
                                 @endforeach

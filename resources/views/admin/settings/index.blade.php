@@ -26,7 +26,7 @@
                     <label for="site_logo" style="display:block; margin-bottom: 8px;">Site Logo (Image)</label>
                     @if(isset($settings['site_logo']) && $settings['site_logo'])
                         <div style="margin-bottom: 10px;">
-                            <img src="{{ asset('storage/' . $settings['site_logo']) }}" alt="Logo" style="height: 50px; background: #fff; padding: 5px; border-radius: 4px;">
+                            <img src="{{ asset('uploads/' . $settings['site_logo']) }}" alt="Logo" style="height: 50px; background: #fff; padding: 5px; border-radius: 4px;">
                         </div>
                     @endif
                     <input type="file" name="site_logo" id="site_logo" class="form-control" style="width: 100%; padding: 10px; background: var(--bg-tertiary); border: 1px solid var(--border-color); color: white; border-radius: 8px;">
@@ -180,7 +180,7 @@
                                 <label style="display:block; margin-bottom: 8px; font-weight: 600;">Image</label>
                                 @if(isset($settings["slider_{$i}_image"]) && $settings["slider_{$i}_image"])
                                     <div style="margin-bottom: 10px; border-radius: 8px; overflow: hidden; border: 1px solid var(--border-color);">
-                                        <img src="{{ asset('storage/' . $settings["slider_{$i}_image"]) }}" alt="Slide {{ $i }}" style="height: 80px; width: 100%; object-fit: cover; display: block;">
+                                        <img src="{{ asset('uploads/' . $settings["slider_{$i}_image"]) }}" alt="Slide {{ $i }}" style="height: 80px; width: 100%; object-fit: cover; display: block;">
                                     </div>
                                 @endif
                                 <input type="file" name="slider_{{ $i }}_image" class="form-control" style="width: 100%; padding: 8px; background: var(--bg-tertiary); border: 1px solid var(--border-color); color: white; border-radius: 8px; font-size: 0.85rem;">

@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Dashboard') — LUXE Admin</title>
+    @if(isset($settings['web_icon']) && $settings['web_icon'])
+        <link rel="icon" href="{{ asset('uploads/' . $settings['web_icon']) }}">
+    @endif
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
 </head>
@@ -12,7 +15,16 @@
         {{-- SIDEBAR --}}
         <aside class="admin-sidebar" id="adminSidebar">
             <div class="sidebar-header">
-                <div class="sidebar-brand">{{ $settings['site_name'] ?? 'LUXE' }}</div>
+                <div class="sidebar-brand">
+                    @if(isset($settings['site_logo_dark']) || isset($settings['site_logo_light']))
+                        @php 
+                            $adminLogo = isset($settings['site_logo_dark']) && $settings['site_logo_dark'] ? $settings['site_logo_dark'] : $settings['site_logo_light'];
+                        @endphp
+                        <img src="{{ asset('uploads/' . $adminLogo) }}" alt="{{ $settings['site_name'] ?? 'LUXE' }}" style="height: 32px;">
+                    @else
+                        {{ $settings['site_name'] ?? 'LUXE' }}
+                    @endif
+                </div>
                 <div class="sidebar-subtitle">Admin Panel</div>
             </div>
             <nav class="sidebar-nav">

@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Authentication') — {{ $settings['site_name'] ?? 'LUXE Store' }}</title>
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+    
+    @if(isset($settings['web_icon']) && $settings['web_icon'])
+        <link rel="icon" href="{{ asset('uploads/' . $settings['web_icon']) }}">
+    @endif
+    
     <script>
         (function() {
             const storedTheme = localStorage.getItem('luxe_theme');
@@ -27,6 +32,13 @@
         }
     </style>
     @endif
+    
+    <style>
+        [data-theme="dark"] .logo-light { display: none !important; }
+        [data-theme="dark"] .logo-dark { display: inline-block !important; }
+        [data-theme="light"] .logo-dark { display: none !important; }
+        [data-theme="light"] .logo-light { display: inline-block !important; }
+    </style>
 </head>
 <body style="background: var(--bg-primary); color: var(--text-primary); transition: background-color 0.3s ease, color 0.3s ease;">
     <div class="auth-page" style="min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; position: relative; background: radial-gradient(circle at 50% 30%, var(--accent-glow) 0%, transparent 70%);">
@@ -44,8 +56,13 @@
             {{-- App Logo & Business Name --}}
             <div style="text-align: center; margin-bottom: 24px;">
                 <a href="{{ route('home') }}" class="navbar-brand" style="display: inline-flex; align-items: center; justify-content: center; gap: 10px; text-decoration: none;">
-                    @if(isset($settings['site_logo']) && $settings['site_logo'])
-                        <img src="{{ asset('uploads/' . $settings['site_logo']) }}" alt="{{ $settings['site_name'] ?? 'LUXE' }}" style="max-height: 54px; max-width: 220px; object-fit: contain;">
+                    @if(isset($settings['site_logo_dark']) || isset($settings['site_logo_light']))
+                        @php 
+                            $darkLogo = isset($settings['site_logo_dark']) && $settings['site_logo_dark'] ? $settings['site_logo_dark'] : $settings['site_logo_light'];
+                            $lightLogo = isset($settings['site_logo_light']) && $settings['site_logo_light'] ? $settings['site_logo_light'] : $settings['site_logo_dark'];
+                        @endphp
+                        <img src="{{ asset('uploads/' . $darkLogo) }}" class="logo-dark" alt="{{ $settings['site_name'] ?? 'LUXE' }}" style="max-height: 54px; max-width: 220px; object-fit: contain;">
+                        <img src="{{ asset('uploads/' . $lightLogo) }}" class="logo-light" alt="{{ $settings['site_name'] ?? 'LUXE' }}" style="max-height: 54px; max-width: 220px; object-fit: contain;">
                     @else
                         <span style="font-size: 2rem; font-weight: 800; background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
                             {{ $settings['site_name'] ?? 'LUXE Store' }}

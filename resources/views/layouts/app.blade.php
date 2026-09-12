@@ -10,6 +10,11 @@
     <!-- Swiper CSS & JS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    
+    @if(isset($settings['web_icon']) && $settings['web_icon'])
+        <link rel="icon" href="{{ asset('uploads/' . $settings['web_icon']) }}">
+    @endif
+    
     @stack('styles')
     
     <script>
@@ -42,6 +47,13 @@
         }
     </style>
     @endif
+    
+    <style>
+        [data-theme="dark"] .logo-light { display: none !important; }
+        [data-theme="dark"] .logo-dark { display: inline-block !important; }
+        [data-theme="light"] .logo-dark { display: none !important; }
+        [data-theme="light"] .logo-light { display: inline-block !important; }
+    </style>
 
     @if(isset($settings['gtm_id']) && $settings['gtm_id'])
     <!-- Google Tag Manager -->
@@ -98,8 +110,13 @@
         </div>
         <div class="navbar-inner">
             <a href="{{ route('home') }}" class="navbar-brand">
-                @if(isset($settings['site_logo']) && $settings['site_logo'])
-                    <img src="{{ asset('uploads/' . $settings['site_logo']) }}" alt="{{ $settings['site_name'] ?? 'LUXE' }}" style="height: 32px; display: inline-block;">
+                @if(isset($settings['site_logo_dark']) || isset($settings['site_logo_light']))
+                    @php 
+                        $darkLogo = isset($settings['site_logo_dark']) && $settings['site_logo_dark'] ? $settings['site_logo_dark'] : $settings['site_logo_light'];
+                        $lightLogo = isset($settings['site_logo_light']) && $settings['site_logo_light'] ? $settings['site_logo_light'] : $settings['site_logo_dark'];
+                    @endphp
+                    <img src="{{ asset('uploads/' . $darkLogo) }}" class="logo-dark" alt="{{ $settings['site_name'] ?? 'LUXE' }}" style="height: 32px;">
+                    <img src="{{ asset('uploads/' . $lightLogo) }}" class="logo-light" alt="{{ $settings['site_name'] ?? 'LUXE' }}" style="height: 32px;">
                 @else
                     {{ $settings['site_name'] ?? 'LUXE' }}
                 @endif
@@ -108,8 +125,13 @@
             <ul class="navbar-nav" id="navMenu">
                 <div class="sidebar-header" style="display: none;">
                     <a href="{{ route('home') }}" class="navbar-brand">
-                        @if(isset($settings['site_logo']) && $settings['site_logo'])
-                            <img src="{{ asset('uploads/' . $settings['site_logo']) }}" alt="{{ $settings['site_name'] ?? 'LUXE' }}" style="height: 32px; display: inline-block;">
+                        @if(isset($settings['site_logo_dark']) || isset($settings['site_logo_light']))
+                            @php 
+                                $darkLogo = isset($settings['site_logo_dark']) && $settings['site_logo_dark'] ? $settings['site_logo_dark'] : $settings['site_logo_light'];
+                                $lightLogo = isset($settings['site_logo_light']) && $settings['site_logo_light'] ? $settings['site_logo_light'] : $settings['site_logo_dark'];
+                            @endphp
+                            <img src="{{ asset('uploads/' . $darkLogo) }}" class="logo-dark" alt="{{ $settings['site_name'] ?? 'LUXE' }}" style="height: 32px;">
+                            <img src="{{ asset('uploads/' . $lightLogo) }}" class="logo-light" alt="{{ $settings['site_name'] ?? 'LUXE' }}" style="height: 32px;">
                         @else
                             {{ $settings['site_name'] ?? 'LUXE' }}
                         @endif
@@ -207,8 +229,13 @@
             <div class="footer-grid">
                 <div>
                     <div class="footer-brand">
-                        @if(isset($settings['site_logo']) && $settings['site_logo'])
-                            <img src="{{ asset('uploads/' . $settings['site_logo']) }}" alt="{{ $settings['site_name'] ?? 'LUXE' }}" style="height: 40px; margin-bottom: 16px;">
+                        @if(isset($settings['site_logo_dark']) || isset($settings['site_logo_light']))
+                            @php 
+                                $darkLogo = isset($settings['site_logo_dark']) && $settings['site_logo_dark'] ? $settings['site_logo_dark'] : $settings['site_logo_light'];
+                                $lightLogo = isset($settings['site_logo_light']) && $settings['site_logo_light'] ? $settings['site_logo_light'] : $settings['site_logo_dark'];
+                            @endphp
+                            <img src="{{ asset('uploads/' . $darkLogo) }}" class="logo-dark" alt="{{ $settings['site_name'] ?? 'LUXE' }}" style="height: 40px; margin-bottom: 16px;">
+                            <img src="{{ asset('uploads/' . $lightLogo) }}" class="logo-light" alt="{{ $settings['site_name'] ?? 'LUXE' }}" style="height: 40px; margin-bottom: 16px;">
                         @else
                             {{ $settings['site_name'] ?? 'LUXE' }}
                         @endif

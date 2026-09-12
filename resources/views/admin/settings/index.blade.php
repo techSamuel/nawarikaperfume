@@ -23,14 +23,33 @@
                 </div>
 
                 <div class="form-group" style="margin-bottom: 20px;">
-                    <label for="site_logo" style="display:block; margin-bottom: 8px;">Site Logo (Image)</label>
-                    @if(isset($settings['site_logo']) && $settings['site_logo'])
+                    <label for="site_logo_dark" style="display:block; margin-bottom: 8px;">Site Logo (Dark Theme)</label>
+                    @if(isset($settings['site_logo_dark']) && $settings['site_logo_dark'])
                         <div style="margin-bottom: 10px;">
-                            <img src="{{ asset('uploads/' . $settings['site_logo']) }}" alt="Logo" style="height: 50px; background: #fff; padding: 5px; border-radius: 4px;">
+                            <img src="{{ asset('uploads/' . $settings['site_logo_dark']) }}" alt="Logo Dark" style="height: 50px; background: #fff; padding: 5px; border-radius: 4px;">
                         </div>
                     @endif
-                    <input type="file" name="site_logo" id="site_logo" class="form-control" style="width: 100%; padding: 10px; background: var(--bg-tertiary); border: 1px solid var(--border-color); color: white; border-radius: 8px;">
-                    <small style="color: var(--text-muted); display:block; margin-top: 4px;">Leave empty to keep current logo. If empty, the Site Name will be used.</small>
+                    <input type="file" name="site_logo_dark" id="site_logo_dark" class="form-control" style="width: 100%; padding: 10px; background: var(--bg-tertiary); border: 1px solid var(--border-color); color: white; border-radius: 8px;">
+                </div>
+
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <label for="site_logo_light" style="display:block; margin-bottom: 8px;">Site Logo (White/Light Theme)</label>
+                    @if(isset($settings['site_logo_light']) && $settings['site_logo_light'])
+                        <div style="margin-bottom: 10px;">
+                            <img src="{{ asset('uploads/' . $settings['site_logo_light']) }}" alt="Logo Light" style="height: 50px; background: #1a1a1a; padding: 5px; border-radius: 4px;">
+                        </div>
+                    @endif
+                    <input type="file" name="site_logo_light" id="site_logo_light" class="form-control" style="width: 100%; padding: 10px; background: var(--bg-tertiary); border: 1px solid var(--border-color); color: white; border-radius: 8px;">
+                </div>
+
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <label for="web_icon" style="display:block; margin-bottom: 8px;">Web Icon (Favicon)</label>
+                    @if(isset($settings['web_icon']) && $settings['web_icon'])
+                        <div style="margin-bottom: 10px;">
+                            <img src="{{ asset('uploads/' . $settings['web_icon']) }}" alt="Favicon" style="height: 32px; background: #fff; padding: 2px; border-radius: 4px;">
+                        </div>
+                    @endif
+                    <input type="file" name="web_icon" id="web_icon" class="form-control" accept=".png,.ico,.jpg,.jpeg" style="width: 100%; padding: 10px; background: var(--bg-tertiary); border: 1px solid var(--border-color); color: white; border-radius: 8px;">
                 </div>
             </div>
 
@@ -54,6 +73,23 @@
                 <div class="form-group" style="margin-bottom: 20px;">
                     <label for="secondary_color" style="display:block; margin-bottom: 8px;">Secondary Accent Color</label>
                     <input type="color" name="secondary_color" id="secondary_color" value="{{ $settings['secondary_color'] ?? '#a855f7' }}" style="width: 100%; height: 40px; padding: 0; border: none; border-radius: 8px; cursor: pointer;">
+                </div>
+
+                <h3 style="margin-bottom: 16px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; margin-top: 32px;">Meta Data (SEO)</h3>
+                
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <label for="meta_title" style="display:block; margin-bottom: 8px;">Meta Title</label>
+                    <input type="text" name="meta_title" id="meta_title" class="form-control" value="{{ $settings['meta_title'] ?? '' }}" placeholder="SEO Meta Title" style="width: 100%; padding: 10px; background: var(--bg-tertiary); border: 1px solid var(--border-color); color: white; border-radius: 8px;">
+                </div>
+
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <label for="meta_description" style="display:block; margin-bottom: 8px;">Meta Description</label>
+                    <textarea name="meta_description" id="meta_description" class="form-control" rows="3" placeholder="SEO Meta Description" style="width: 100%; padding: 10px; background: var(--bg-tertiary); border: 1px solid var(--border-color); color: white; border-radius: 8px;">{{ $settings['meta_description'] ?? '' }}</textarea>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <label for="meta_keywords" style="display:block; margin-bottom: 8px;">Meta Keywords</label>
+                    <input type="text" name="meta_keywords" id="meta_keywords" class="form-control" value="{{ $settings['meta_keywords'] ?? '' }}" placeholder="keyword1, keyword2, keyword3" style="width: 100%; padding: 10px; background: var(--bg-tertiary); border: 1px solid var(--border-color); color: white; border-radius: 8px;">
                 </div>
             </div>
             @endif

@@ -59,6 +59,15 @@ class CartController extends Controller
 
         session()->put('cart', $cart);
 
+        \App\Jobs\SendFacebookCapiEvent::dispatch('AddToCart', [
+            'content_name' => $product->name,
+            'content_ids' => [$product->id],
+            'content_type' => 'product',
+            'value' => ($product->sale_price ?? $product->price) * $qty,
+            'currency' => 'BDT',
+            'num_items' => $qty
+        ]);
+
         if ($request->ajax() || $request->wantsJson()) {
             return response()->json(['success' => true, 'message' => 'Product added to cart!']);
         }

@@ -38,6 +38,14 @@ class CheckoutController extends Controller
         $total = $subtotal + $shipping;
         $user = auth()->user();
 
+        \App\Jobs\SendFacebookCapiEvent::dispatch('InitiateCheckout', [
+            'value' => $total,
+            'currency' => 'BDT',
+            'content_ids' => array_keys($cart),
+            'content_type' => 'product',
+            'num_items' => count($cart)
+        ]);
+
         return view('checkout', compact('cartItems', 'subtotal', 'shipping', 'total', 'user'));
     }
 
@@ -66,6 +74,16 @@ class CheckoutController extends Controller
 
         $shipping = $subtotal > 0 ? ($subtotal >= 500 ? 0 : 50) : 0;
         $total = $subtotal + $shipping;
+
+        if (count($cart) > 0) {
+            \App\Jobs\SendFacebookCapiEvent::dispatch('InitiateCheckout', [
+                'value' => $total,
+                'currency' => 'BDT',
+                'content_ids' => array_keys($cart),
+                'content_type' => 'product',
+                'num_items' => count($cart)
+            ]);
+        }
 
         return view('partials.checkout_sidebar', compact('cartItems', 'subtotal', 'shipping', 'total'));
     }
@@ -137,6 +155,14 @@ class CheckoutController extends Controller
 
             DB::commit();
             session()->forget('cart');
+
+            \App\Jobs\SendFacebookCapiEvent::dispatch('Purchase', [
+                'value' => $total,
+                'currency' => 'BDT',
+                'content_ids' => array_column($orderItems, 'product_id'),
+                'content_type' => 'product',
+                'order_id' => $order->order_number
+            ]);
 
             return redirect()->route('order.confirmation', $order->order_number)
                 ->with('success', 'Order placed successfully!');

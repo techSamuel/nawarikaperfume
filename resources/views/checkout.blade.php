@@ -99,3 +99,17 @@
     </form>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+    if (typeof fbq === 'function') {
+        fbq('track', 'InitiateCheckout', {
+            value: {{ $total }},
+            currency: 'BDT',
+            content_ids: {!! json_encode(array_keys($cartItems ?? [])) !!},
+            content_type: 'product',
+            num_items: {{ count($cartItems ?? []) }}
+        });
+    }
+</script>
+@endpush

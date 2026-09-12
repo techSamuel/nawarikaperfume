@@ -46,6 +46,11 @@ class RegisteredUserController extends Controller
 
         Auth::login($user);
 
-        return redirect(route('home', absolute: false));
+        \App\Jobs\SendFacebookCapiEvent::dispatch('CompleteRegistration', [
+            'content_name' => 'User Registration',
+            'status' => 'success'
+        ]);
+
+        return redirect(route('home', absolute: false))->with('registration_success', true);
     }
 }

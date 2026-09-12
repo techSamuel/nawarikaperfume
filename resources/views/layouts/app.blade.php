@@ -71,6 +71,17 @@
     src="https://www.facebook.com/tr?id={{ $settings['fb_pixel_id'] }}&ev=PageView&noscript=1"
     /></noscript>
     <!-- End Facebook Pixel Code -->
+
+    @if(session('registration_success'))
+    <script>
+        if (typeof fbq === 'function') {
+            fbq('track', 'CompleteRegistration', {
+                content_name: 'User Registration',
+                status: 'success'
+            });
+        }
+    </script>
+    @endif
     @endif
 </head>
 <body>
@@ -472,6 +483,9 @@
                 .then(res => res.json())
                 .then(data => {
                     if(data.success) {
+                        if (typeof fbq === 'function') {
+                            fbq('track', 'AddToCart');
+                        }
                         openCheckoutSidebar();
                     } else {
                         alert(data.message || 'Error adding to cart');
@@ -510,6 +524,10 @@
             document.getElementById('quick-checkout-overlay').classList.add('active');
             document.getElementById('quick-checkout-sidebar').classList.add('active');
             document.body.style.overflow = 'hidden';
+
+            if (typeof fbq === 'function') {
+                fbq('track', 'InitiateCheckout');
+            }
 
             fetch('{{ route("checkout.sidebar") }}', {
                 headers: {

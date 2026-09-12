@@ -126,3 +126,15 @@
     </div>
 </div>
 @endsection
+
+@if(request()->filled('search'))
+@push('scripts')
+<script>
+    if (typeof fbq === 'function') {
+        fbq('track', 'Search', {
+            search_string: '{{ addslashes(request('search')) }}'
+        });
+    }
+</script>
+@endpush
+@endif

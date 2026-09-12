@@ -22,6 +22,7 @@ class ShopController extends Controller
                 $q->where('name', 'like', "%{$search}%")
                   ->orWhere('description', 'like', "%{$search}%");
             });
+            \App\Jobs\SendFacebookCapiEvent::dispatch('Search', ['search_string' => $search]);
         }
 
         if ($request->filled('min_price')) {
@@ -55,6 +56,14 @@ class ShopController extends Controller
             ->where('category_id', $product->category_id)
             ->where('id', '!=', $product->id)
             ->take(4)->get();
+
+        \App\Jobs\SendFacebookCapiEvent::dispatch('ViewContent', [
+            'content_name' => $product->name,
+            'content_ids' => [$product->id],
+            'content_type' => 'product',
+            'value' => $product->sale_price ?? $product->price,
+            'currency' => 'BDT'
+        ]);
 
         return view('product', compact('product', 'relatedProducts'));
     }

@@ -619,10 +619,10 @@
                             'Content-Type': 'application/json',
                             'X-CSRF-TOKEN': '{{ csrf_token() }}'
                         },
-                        body: JSON.stringify({ duration: 10 })
+                        body: JSON.stringify({ duration: 60 })
                     }).catch(function(e) {});
                 }
-            }, 10000);
+            }, 60000);
         })();
     </script>
 

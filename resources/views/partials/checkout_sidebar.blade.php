@@ -11,8 +11,10 @@
             <button type="button" class="btn btn-outline" onclick="closeCheckoutSidebar()">Continue Shopping</button>
         </div>
     @else
-        <form action="{{ route('checkout.store') }}" method="POST" id="quickCheckoutForm">
+        <form action="{{ route('checkout.store') }}" method="POST" id="quickCheckoutForm" style="display: flex; flex-direction: column; height: 100%;">
             @csrf
+            
+            <div style="flex: 1; overflow-y: auto;">
             
             {{-- CART ITEMS SUMMARY --}}
             <div class="sidebar-cart-items">
@@ -89,7 +91,9 @@
                 </div>
             </div>
 
-            <div class="sidebar-checkout-footer">
+            </div>
+
+            <div class="sidebar-checkout-footer" style="flex-shrink: 0;">
                 <button type="submit" class="btn btn-primary btn-block btn-lg" style="border-radius: 0; margin: 0; padding: 18px;">
                     Confirm Order — ৳{{ number_format($total, 2) }}
                 </button>

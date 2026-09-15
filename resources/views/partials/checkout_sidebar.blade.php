@@ -90,14 +90,48 @@
                     <textarea id="sidebar_notes" name="notes" class="form-control" rows="2" placeholder="Any special instructions..."></textarea>
                 </div>
             </div>
-
             </div>
 
             <div class="sidebar-checkout-footer" style="flex-shrink: 0;">
-                <button type="submit" class="btn btn-primary btn-block btn-lg" style="border-radius: 0; margin: 0; padding: 18px;">
+                <button type="submit" class="btn btn-primary btn-block btn-lg" style="border-radius: 0; margin: 0; padding: 18px; box-shadow: 0 -4px 10px rgba(0,0,0,0.1);">
                     Confirm Order — ৳{{ number_format($total, 2) }}
                 </button>
             </div>
         </form>
     @endif
 </div>
+
+<script>
+    // Bulletproof fix for iOS/Android keyboards hiding the fixed footer
+    document.addEventListener('DOMContentLoaded', () => {
+        const inputs = document.querySelectorAll('#quickCheckoutForm input, #quickCheckoutForm textarea');
+        const sidebar = document.querySelector('.sidebar-checkout-wrapper');
+
+        if (!sidebar) return;
+
+        inputs.forEach(input => {
+            input.addEventListener('focus', () => {
+                // Apply only on mobile screens
+                if (window.innerWidth <= 768) {
+                    // Pull the entire sidebar up to avoid the keyboard
+                    sidebar.style.bottom = '350px';
+                    // Give it a moment to resize, then scroll the focused input into view
+                    setTimeout(() => {
+                        input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }, 200);
+                }
+            });
+
+            input.addEventListener('blur', () => {
+                // Add a small delay to check if they just moved to another input
+                setTimeout(() => {
+                    const active = document.activeElement;
+                    if (!active || (active.tagName !== 'INPUT' && active.tagName !== 'TEXTAREA')) {
+                        // Restore sidebar to full height
+                        sidebar.style.bottom = '0';
+                    }
+                }, 100);
+            });
+        });
+    });
+</script>

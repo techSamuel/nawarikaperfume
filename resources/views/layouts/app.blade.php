@@ -550,6 +550,13 @@
             refreshNavCartCount();
             document.getElementById('quick-checkout-overlay').classList.add('active');
             document.getElementById('quick-checkout-sidebar').classList.add('active');
+            
+            // Advanced iOS Body Scroll Lock
+            const scrollY = window.scrollY;
+            document.body.dataset.scrollY = scrollY;
+            document.body.style.position = 'fixed';
+            document.body.style.top = `-${scrollY}px`;
+            document.body.style.width = '100%';
             document.body.style.overflow = 'hidden';
 
             if (typeof fbq === 'function') {
@@ -576,8 +583,16 @@
         function closeCheckoutSidebar() {
             document.getElementById('quick-checkout-overlay').classList.remove('active');
             document.getElementById('quick-checkout-sidebar').classList.remove('active');
-            document.body.style.overflow = '';
             
+            // Restore Body Scroll Lock
+            const scrollY = document.body.dataset.scrollY || 0;
+            document.body.style.position = '';
+            document.body.style.top = '';
+            document.body.style.width = '';
+            document.body.style.overflow = '';
+            window.scrollTo(0, scrollY);
+            
+            const bottomBar = document.querySelector('.bottom-cart-bar');       
             // Reload page to reflect updated cart totals in header and bottom bar
             window.location.reload();
         }

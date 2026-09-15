@@ -3,7 +3,7 @@
     <button type="button" class="close-sidebar-btn" onclick="closeCheckoutSidebar()">&times;</button>
 </div>
 
-<div class="sidebar-checkout-content">
+<div class="sidebar-checkout-content" style="position: relative;">
     @if(empty($cartItems))
         <div style="text-align:center; padding: 40px 20px;">
             <div style="font-size:3rem; margin-bottom:16px;">🛒</div>
@@ -11,10 +11,10 @@
             <button type="button" class="btn btn-outline" onclick="closeCheckoutSidebar()">Continue Shopping</button>
         </div>
     @else
-        <form action="{{ route('checkout.store') }}" method="POST" id="quickCheckoutForm" style="display: flex; flex-direction: column; height: 100%;">
+        <form action="{{ route('checkout.store') }}" method="POST" id="quickCheckoutForm" style="height: 100%; width: 100%;">
             @csrf
             
-            <div style="flex: 1; overflow-y: auto; min-height: 0; padding-bottom: 20px;">
+            <div style="height: 100%; overflow-y: auto; padding-bottom: 100px; -webkit-overflow-scrolling: touch;">
             
             {{-- CART ITEMS SUMMARY --}}
             <div class="sidebar-cart-items">
@@ -92,8 +92,8 @@
             </div>
             </div>
 
-            <div class="sidebar-checkout-footer" style="flex-shrink: 0;">
-                <button type="submit" class="btn btn-primary btn-block btn-lg" style="border-radius: 0; margin: 0; padding: 18px; box-shadow: 0 -4px 10px rgba(0,0,0,0.1);">
+            <div class="sidebar-checkout-footer" style="position: absolute; bottom: 0; left: 0; right: 0; background: var(--bg-secondary); z-index: 10; box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.1);">
+                <button type="submit" class="btn btn-primary btn-block btn-lg" style="border-radius: 0; margin: 0; padding: 18px; box-shadow: none;">
                     Confirm Order — ৳{{ number_format($total, 2) }}
                 </button>
             </div>
@@ -113,9 +113,7 @@
             input.addEventListener('focus', () => {
                 // Apply only on mobile screens
                 if (window.innerWidth <= 768) {
-                    // Pull the entire sidebar up to avoid the keyboard
-                    sidebar.style.bottom = '350px';
-                    // Give it a moment to resize, then scroll the focused input into view
+                    sidebar.style.bottom = '400px';
                     setTimeout(() => {
                         input.scrollIntoView({ behavior: 'smooth', block: 'center' });
                     }, 200);
@@ -123,11 +121,9 @@
             });
 
             input.addEventListener('blur', () => {
-                // Add a small delay to check if they just moved to another input
                 setTimeout(() => {
                     const active = document.activeElement;
                     if (!active || (active.tagName !== 'INPUT' && active.tagName !== 'TEXTAREA')) {
-                        // Restore sidebar to full height
                         sidebar.style.bottom = '0';
                     }
                 }, 100);

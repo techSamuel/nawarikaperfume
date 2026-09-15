@@ -9,6 +9,7 @@
             <a href="{{ route('admin.orders.index') }}" class="filter-btn {{ !request('status') ? 'active' : '' }}">All <span class="count">({{ $statusCounts['all'] }})</span></a>
             <a href="{{ route('admin.orders.index', ['status' => 'pending']) }}" class="filter-btn {{ request('status') === 'pending' ? 'active' : '' }}">Pending <span class="count">({{ $statusCounts['pending'] }})</span></a>
             <a href="{{ route('admin.orders.index', ['status' => 'processing']) }}" class="filter-btn {{ request('status') === 'processing' ? 'active' : '' }}">Processing <span class="count">({{ $statusCounts['processing'] }})</span></a>
+            <a href="{{ route('admin.orders.index', ['status' => 'confirm']) }}" class="filter-btn {{ request('status') === 'confirm' ? 'active' : '' }}">Confirm <span class="count">({{ $statusCounts['confirm'] ?? 0 }})</span></a>
             <a href="{{ route('admin.orders.index', ['status' => 'shipped']) }}" class="filter-btn {{ request('status') === 'shipped' ? 'active' : '' }}">Shipped <span class="count">({{ $statusCounts['shipped'] }})</span></a>
             <a href="{{ route('admin.orders.index', ['status' => 'delivered']) }}" class="filter-btn {{ request('status') === 'delivered' ? 'active' : '' }}">Delivered <span class="count">({{ $statusCounts['delivered'] }})</span></a>
             <a href="{{ route('admin.orders.index', ['status' => 'cancelled']) }}" class="filter-btn {{ request('status') === 'cancelled' ? 'active' : '' }}">Cancelled <span class="count">({{ $statusCounts['cancelled'] }})</span></a>

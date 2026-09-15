@@ -9,7 +9,9 @@ class Order extends Model
     protected $fillable = [
         'user_id', 'order_number', 'name', 'email', 'phone',
         'address', 'city', 'state', 'zip', 'subtotal', 'shipping',
-        'total', 'status', 'payment_method', 'notes'
+        'total', 'status', 'payment_method', 'notes',
+        'ip_address', 'user_agent', 'device_type', 'browser',
+        'platform', 'timezone', 'country'
     ];
 
     protected $casts = [
@@ -43,6 +45,7 @@ class Order extends Model
         return match($this->status) {
             'pending' => 'badge-warning',
             'processing' => 'badge-info',
+            'confirm' => 'badge-info',
             'shipped' => 'badge-primary',
             'delivered' => 'badge-success',
             'cancelled' => 'badge-danger',

@@ -30,6 +30,7 @@ class OrderController extends Controller
             'all' => Order::count(),
             'pending' => Order::where('status', 'pending')->count(),
             'processing' => Order::where('status', 'processing')->count(),
+            'confirm' => Order::where('status', 'confirm')->count(),
             'shipped' => Order::where('status', 'shipped')->count(),
             'delivered' => Order::where('status', 'delivered')->count(),
             'cancelled' => Order::where('status', 'cancelled')->count(),
@@ -47,7 +48,7 @@ class OrderController extends Controller
     public function updateStatus(Request $request, Order $order)
     {
         $request->validate([
-            'status' => 'required|in:pending,processing,shipped,delivered,cancelled',
+            'status' => 'required|in:pending,processing,confirm,shipped,delivered,cancelled',
         ]);
 
         $oldStatus = $order->status;
@@ -59,6 +60,17 @@ class OrderController extends Controller
                     $item->product->increment('stock', $item->quantity);
                 }
             }
+        }
+
+        if ($request->status === 'confirm' && $oldStatus !== 'confirm') {
+            $order->load('items');
+            \App\Jobs\SendFacebookCapiEvent::dispatch('Purchase', [
+                'value' => $order->total,
+                'currency' => 'BDT',
+                'content_ids' => $order->items->pluck('product_id')->toArray(),
+                'content_type' => 'product',
+                'order_id' => $order->order_number
+            ]);
         }
 
         return back()->with('success', 'Order status updated to ' . ucfirst($request->status) . '.');

@@ -27,6 +27,7 @@
             <select name="status">
                 <option value="pending" {{ $order->status === 'pending' ? 'selected' : '' }}>Pending</option>
                 <option value="processing" {{ $order->status === 'processing' ? 'selected' : '' }}>Processing</option>
+                <option value="confirm" {{ $order->status === 'confirm' ? 'selected' : '' }}>Confirm</option>
                 <option value="shipped" {{ $order->status === 'shipped' ? 'selected' : '' }}>Shipped</option>
                 <option value="delivered" {{ $order->status === 'delivered' ? 'selected' : '' }}>Delivered</option>
                 <option value="cancelled" {{ $order->status === 'cancelled' ? 'selected' : '' }}>Cancelled</option>
@@ -68,6 +69,27 @@
             <div style="margin-top:12px; padding-top:12px; border-top:1px solid var(--border-color);">
                 <span style="font-size:0.8rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px;">Notes</span>
                 <p style="margin-top:6px; color:var(--text-secondary); font-size:0.9rem;">{{ $order->notes }}</p>
+            </div>
+        @endif
+    </div>
+</div>
+
+<div class="order-detail-grid" style="margin-top: 24px;">
+    {{-- CUSTOMER TECHNICAL DETAILS --}}
+    <div class="order-info-card" style="grid-column: 1 / -1;">
+        <h3>Customer Technical Details</h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
+            <div class="order-info-row" style="margin-bottom:0;"><span>IP Address</span><span>{{ $order->ip_address ?? 'N/A' }}</span></div>
+            <div class="order-info-row" style="margin-bottom:0;"><span>Country</span><span>{{ $order->country ?? 'N/A' }}</span></div>
+            <div class="order-info-row" style="margin-bottom:0;"><span>Device</span><span>{{ $order->device_type ?? 'N/A' }}</span></div>
+            <div class="order-info-row" style="margin-bottom:0;"><span>Platform</span><span>{{ $order->platform ?? 'N/A' }}</span></div>
+            <div class="order-info-row" style="margin-bottom:0;"><span>Browser</span><span>{{ $order->browser ?? 'N/A' }}</span></div>
+            <div class="order-info-row" style="margin-bottom:0;"><span>Timezone</span><span>{{ $order->timezone ?? 'N/A' }}</span></div>
+        </div>
+        @if($order->user_agent)
+            <div style="margin-top:16px; padding-top:16px; border-top:1px solid var(--border-color);">
+                <span style="font-size:0.8rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px;">User Agent</span>
+                <p style="margin-top:6px; color:var(--text-secondary); font-size:0.85rem; word-break: break-all;">{{ $order->user_agent }}</p>
             </div>
         @endif
     </div>

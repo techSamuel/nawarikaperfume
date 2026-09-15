@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\DB;
 
 class CheckoutController extends Controller
 {
+    use \App\Traits\VisitorDetectionTrait;
+
     public function index()
     {
         $cart = session()->get('cart', []);
@@ -131,6 +133,9 @@ class CheckoutController extends Controller
             $shipping = $subtotal >= 500 ? 0 : 50;
             $total = $subtotal + $shipping;
 
+            $userAgent = $request->header('User-Agent', '');
+            $timezone = $request->header('X-Timezone') ?? $request->cookie('visitor_tz') ?? 'Asia/Dhaka';
+
             $order = Order::create([
                 'user_id' => auth()->id(),
                 'order_number' => Order::generateOrderNumber(),
@@ -147,6 +152,13 @@ class CheckoutController extends Controller
                 'status' => 'pending',
                 'payment_method' => 'cod',
                 'notes' => $request->notes,
+                'ip_address' => $request->ip(),
+                'user_agent' => substr($userAgent, 0, 500),
+                'device_type' => $this->detectDevice($userAgent),
+                'browser' => $this->detectBrowser($userAgent),
+                'platform' => $this->detectPlatform($userAgent),
+                'timezone' => $timezone,
+                'country' => $this->detectCountry($request),
             ]);
 
             foreach ($orderItems as $item) {
@@ -155,14 +167,6 @@ class CheckoutController extends Controller
 
             DB::commit();
             session()->forget('cart');
-
-            \App\Jobs\SendFacebookCapiEvent::dispatch('Purchase', [
-                'value' => $total,
-                'currency' => 'BDT',
-                'content_ids' => array_column($orderItems, 'product_id'),
-                'content_type' => 'product',
-                'order_id' => $order->order_number
-            ]);
 
             return redirect()->route('order.confirmation', $order->order_number)
                 ->with('success', 'Order placed successfully!');

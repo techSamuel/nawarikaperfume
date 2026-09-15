@@ -103,21 +103,36 @@
 </div>
 
 <script>
-    // Fix for mobile keyboards hiding the fixed footer
+    // Advanced fix for iOS Safari mobile keyboards
     if (window.visualViewport) {
         const adjustSidebarHeight = () => {
             const sidebar = document.querySelector('.sidebar-checkout-wrapper');
             if (sidebar) {
-                // Force the height to match the visible viewport, minus any browser UI
                 sidebar.style.height = window.visualViewport.height + 'px';
+                // iOS shifts the visual viewport down when keyboard opens
+                sidebar.style.top = window.visualViewport.offsetTop + 'px';
                 sidebar.style.bottom = 'auto';
             }
         };
         
-        window.visualViewport.addEventListener('resize', adjustSidebarHeight);
+        const delayedAdjust = () => {
+            adjustSidebarHeight();
+            setTimeout(adjustSidebarHeight, 100);
+            setTimeout(adjustSidebarHeight, 300);
+        };
+        
+        window.visualViewport.addEventListener('resize', delayedAdjust);
         window.visualViewport.addEventListener('scroll', adjustSidebarHeight);
         
-        // Initial adjustment when sidebar is loaded
+        // Extra fallback: trigger on input focus/blur
+        setTimeout(() => {
+            const inputs = document.querySelectorAll('#quickCheckoutForm input, #quickCheckoutForm textarea');
+            inputs.forEach(input => {
+                input.addEventListener('focus', delayedAdjust);
+                input.addEventListener('blur', delayedAdjust);
+            });
+        }, 500);
+        
         adjustSidebarHeight();
     }
 </script>

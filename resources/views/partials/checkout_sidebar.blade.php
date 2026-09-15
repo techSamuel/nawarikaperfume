@@ -101,3 +101,23 @@
         </form>
     @endif
 </div>
+
+<script>
+    // Fix for mobile keyboards hiding the fixed footer
+    if (window.visualViewport) {
+        const adjustSidebarHeight = () => {
+            const sidebar = document.querySelector('.sidebar-checkout-wrapper');
+            if (sidebar) {
+                // Force the height to match the visible viewport, minus any browser UI
+                sidebar.style.height = window.visualViewport.height + 'px';
+                sidebar.style.bottom = 'auto';
+            }
+        };
+        
+        window.visualViewport.addEventListener('resize', adjustSidebarHeight);
+        window.visualViewport.addEventListener('scroll', adjustSidebarHeight);
+        
+        // Initial adjustment when sidebar is loaded
+        adjustSidebarHeight();
+    }
+</script>

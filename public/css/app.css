@@ -2687,6 +2687,7 @@ tbody tr:hover {
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    min-height: 0;
 }
 
 .sidebar-cart-items {

@@ -14,7 +14,7 @@
         <form action="{{ route('checkout.store') }}" method="POST" id="quickCheckoutForm" style="display: flex; flex-direction: column; height: 100%;">
             @csrf
             
-            <div style="flex: 1; overflow-y: auto;">
+            <div style="flex: 1; overflow-y: auto; min-height: 0; padding-bottom: 20px;">
             
             {{-- CART ITEMS SUMMARY --}}
             <div class="sidebar-cart-items">
@@ -101,38 +101,3 @@
         </form>
     @endif
 </div>
-
-<script>
-    // Advanced fix for iOS Safari mobile keyboards
-    if (window.visualViewport) {
-        const adjustSidebarHeight = () => {
-            const sidebar = document.querySelector('.sidebar-checkout-wrapper');
-            if (sidebar) {
-                sidebar.style.height = window.visualViewport.height + 'px';
-                // iOS shifts the visual viewport down when keyboard opens
-                sidebar.style.top = window.visualViewport.offsetTop + 'px';
-                sidebar.style.bottom = 'auto';
-            }
-        };
-        
-        const delayedAdjust = () => {
-            adjustSidebarHeight();
-            setTimeout(adjustSidebarHeight, 100);
-            setTimeout(adjustSidebarHeight, 300);
-        };
-        
-        window.visualViewport.addEventListener('resize', delayedAdjust);
-        window.visualViewport.addEventListener('scroll', adjustSidebarHeight);
-        
-        // Extra fallback: trigger on input focus/blur
-        setTimeout(() => {
-            const inputs = document.querySelectorAll('#quickCheckoutForm input, #quickCheckoutForm textarea');
-            inputs.forEach(input => {
-                input.addEventListener('focus', delayedAdjust);
-                input.addEventListener('blur', delayedAdjust);
-            });
-        }, 500);
-        
-        adjustSidebarHeight();
-    }
-</script>

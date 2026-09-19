@@ -21,6 +21,10 @@ Route::get('/product/{slug}', [ShopController::class, 'show'])->name('product.sh
 Route::get('/track', [HomeController::class, 'trackPage'])->name('order.track.page');
 Route::get('/track-order', [HomeController::class, 'trackOrder'])->name('order.track');
 Route::get('/language/{locale}', [HomeController::class, 'switchLanguage'])->name('language.switch');
+Route::get('/contact', [HomeController::class, 'contact'])->name('contact');
+Route::get('/faq', [HomeController::class, 'faq'])->name('faq');
+Route::get('/shipping-policy', [HomeController::class, 'shippingPolicy'])->name('shipping.policy');
+Route::get('/return-policy', [HomeController::class, 'returnPolicy'])->name('return.policy');
 Route::get('/api/products/search', [ShopController::class, 'liveSearch'])->name('api.products.search');
 Route::post('/api/visitor/ping', [ShopController::class, 'pingVisitorLog'])->name('api.visitor.ping');
 

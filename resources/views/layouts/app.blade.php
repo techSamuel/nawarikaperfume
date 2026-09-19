@@ -274,10 +274,10 @@
                 <div>
                     <h4>Support</h4>
                     <ul class="footer-links">
-                        <li><a href="#">Contact Us</a></li>
-                        <li><a href="#">FAQs</a></li>
-                        <li><a href="#">Shipping Policy</a></li>
-                        <li><a href="#">Return Policy</a></li>
+                        <li><a href="{{ route('contact') }}">Contact Us</a></li>
+                        <li><a href="{{ route('faq') }}">FAQs</a></li>
+                        <li><a href="{{ route('shipping.policy') }}">Shipping Policy</a></li>
+                        <li><a href="{{ route('return.policy') }}">Return Policy</a></li>
                     </ul>
                 </div>
             </div>

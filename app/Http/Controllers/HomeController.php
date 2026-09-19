@@ -97,4 +97,24 @@ class HomeController extends Controller
         }
         return back();
     }
+
+    public function contact()
+    {
+        return view('pages.contact');
+    }
+
+    public function faq()
+    {
+        return view('pages.faq');
+    }
+
+    public function shippingPolicy()
+    {
+        return view('pages.shipping_policy');
+    }
+
+    public function returnPolicy()
+    {
+        return view('pages.return_policy');
+    }
 }

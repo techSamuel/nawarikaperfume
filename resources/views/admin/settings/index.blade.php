@@ -91,6 +91,19 @@
                     <label for="meta_keywords" style="display:block; margin-bottom: 8px;">Meta Keywords</label>
                     <input type="text" name="meta_keywords" id="meta_keywords" class="form-control" value="{{ $settings['meta_keywords'] ?? '' }}" placeholder="keyword1, keyword2, keyword3" style="width: 100%; padding: 10px; background: var(--bg-tertiary); border: 1px solid var(--border-color); color: white; border-radius: 8px;">
                 </div>
+                <h3 style="margin-bottom: 16px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; margin-top: 32px;">Delivery Settings</h3>
+
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <label for="global_delivery_charge" style="display:block; margin-bottom: 8px;">Universal Delivery Charge (৳)</label>
+                    <input type="number" step="0.01" name="global_delivery_charge" id="global_delivery_charge" class="form-control" value="{{ $settings['global_delivery_charge'] ?? '50' }}" style="width: 100%; padding: 10px; background: var(--bg-tertiary); border: 1px solid var(--border-color); color: white; border-radius: 8px;">
+                    <small style="color: var(--text-muted); display:block; margin-top: 4px;">Default delivery charge applied if a product does not have an individual charge set.</small>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <label for="free_delivery_threshold" style="display:block; margin-bottom: 8px;">Free Delivery Threshold Amount (৳)</label>
+                    <input type="number" step="0.01" name="free_delivery_threshold" id="free_delivery_threshold" class="form-control" value="{{ $settings['free_delivery_threshold'] ?? '500' }}" placeholder="e.g. 1000" style="width: 100%; padding: 10px; background: var(--bg-tertiary); border: 1px solid var(--border-color); color: white; border-radius: 8px;">
+                    <small style="color: var(--text-muted); display:block; margin-top: 4px;">Leave blank for no free delivery. If order subtotal is greater than or equal to this amount, delivery is free.</small>
+                </div>
             </div>
             @endif
 

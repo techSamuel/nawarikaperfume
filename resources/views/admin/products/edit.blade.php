@@ -53,6 +53,16 @@
                         @error('sale_price') <div class="form-error">{{ $message }}</div> @enderror
                     </div>
                 </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="delivery_charge">Individual Delivery Charge (৳)</label>
+                        <input type="number" id="delivery_charge" name="delivery_charge" class="form-control"
+                            value="{{ old('delivery_charge', $product->delivery_charge) }}" step="0.01" min="0">
+                        <small style="color:var(--text-muted); display:block; margin-top:4px;">Leave blank to use the Universal Delivery Charge from settings.</small>
+                        @error('delivery_charge') <div class="form-error">{{ $message }}</div> @enderror
+                    </div>
+                </div>
                 <div class="form-row">
                     <div class="form-group">
                         <label for="stock">Stock Quantity *</label>

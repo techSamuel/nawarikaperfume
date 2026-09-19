@@ -27,7 +27,7 @@ class CartController extends Controller
             }
         }
 
-        $shipping = $subtotal > 0 ? ($subtotal >= 500 ? 0 : 50) : 0;
+        $shipping = $subtotal > 0 ? \App\Services\CartService::calculateShipping($cart, $subtotal) : 0;
         $total = $subtotal + $shipping;
 
         return view('cart', compact('cartItems', 'subtotal', 'shipping', 'total'));

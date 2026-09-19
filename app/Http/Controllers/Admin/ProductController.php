@@ -45,6 +45,7 @@ class ProductController extends Controller
             'description' => 'nullable|string',
             'price' => 'required|numeric|min:0',
             'sale_price' => 'nullable|numeric|min:0|lt:price',
+            'delivery_charge' => 'nullable|numeric|min:0',
             'stock' => 'required|integer|min:0',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'gallery.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
@@ -53,7 +54,7 @@ class ProductController extends Controller
             'is_featured' => 'boolean',
         ]);
 
-        $data = $request->only(['name', 'category_id', 'description', 'price', 'sale_price', 'stock']);
+        $data = $request->only(['name', 'category_id', 'description', 'price', 'sale_price', 'delivery_charge', 'stock']);
         $data['slug'] = Str::slug($request->name);
         $data['is_active'] = $request->has('is_active');
         $data['is_featured'] = $request->has('is_featured');
@@ -102,6 +103,7 @@ class ProductController extends Controller
             'description' => 'nullable|string',
             'price' => 'required|numeric|min:0',
             'sale_price' => 'nullable|numeric|min:0',
+            'delivery_charge' => 'nullable|numeric|min:0',
             'stock' => 'required|integer|min:0',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'gallery.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
@@ -110,7 +112,7 @@ class ProductController extends Controller
             'is_featured' => 'boolean',
         ]);
 
-        $data = $request->only(['name', 'category_id', 'description', 'price', 'sale_price', 'stock']);
+        $data = $request->only(['name', 'category_id', 'description', 'price', 'sale_price', 'delivery_charge', 'stock']);
         $data['is_active'] = $request->has('is_active');
         $data['is_featured'] = $request->has('is_featured');
 

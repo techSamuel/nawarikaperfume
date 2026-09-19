@@ -9,12 +9,13 @@ class Product extends Model
 {
     protected $fillable = [
         'category_id', 'name', 'name_bn', 'slug', 'description', 'description_bn', 'price',
-        'sale_price', 'image', 'gallery', 'videos', 'stock', 'is_active', 'is_featured'
+        'sale_price', 'delivery_charge', 'image', 'gallery', 'videos', 'stock', 'is_active', 'is_featured'
     ];
 
     protected $casts = [
         'price' => 'decimal:2',
         'sale_price' => 'decimal:2',
+        'delivery_charge' => 'decimal:2',
         'gallery' => 'array',
         'videos' => 'array',
         'is_active' => 'boolean',

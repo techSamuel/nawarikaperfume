@@ -36,7 +36,7 @@ class CheckoutController extends Controller
             }
         }
 
-        $shipping = $subtotal >= 500 ? 0 : 50;
+        $shipping = $subtotal > 0 ? \App\Services\CartService::calculateShipping($cart, $subtotal) : 0;
         $total = $subtotal + $shipping;
         $user = auth()->user();
 
@@ -74,7 +74,7 @@ class CheckoutController extends Controller
             }
         }
 
-        $shipping = $subtotal > 0 ? ($subtotal >= 500 ? 0 : 50) : 0;
+        $shipping = $subtotal > 0 ? \App\Services\CartService::calculateShipping($cart, $subtotal) : 0;
         $total = $subtotal + $shipping;
 
         if (count($cart) > 0) {
@@ -130,7 +130,7 @@ class CheckoutController extends Controller
                 $product->decrement('stock', $item['quantity']);
             }
 
-            $shipping = $subtotal >= 500 ? 0 : 50;
+            $shipping = $subtotal > 0 ? \App\Services\CartService::calculateShipping($cart, $subtotal) : 0;
             $total = $subtotal + $shipping;
 
             $userAgent = $request->header('User-Agent', '');

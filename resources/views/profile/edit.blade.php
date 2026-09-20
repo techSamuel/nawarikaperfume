@@ -2,7 +2,7 @@
 @section('title', 'My Profile')
 
 @section('content')
-<div class="container" style="padding: 40px 20px;">
+<div class="container" style="padding: 120px 20px 60px;">
     <div class="profile-layout">
         
         {{-- SIDEBAR --}}

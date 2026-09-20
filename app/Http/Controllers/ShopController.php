@@ -38,7 +38,7 @@ class ShopController extends Controller
             'price_low' => $query->orderBy('price', 'asc'),
             'price_high' => $query->orderBy('price', 'desc'),
             'name' => $query->orderBy('name', 'asc'),
-            default => $query->latest(),
+            default => $query->orderBy('id', 'asc'),
         };
 
         $products = $query->paginate(12)->withQueryString();
@@ -91,7 +91,7 @@ class ShopController extends Controller
             });
         }
 
-        $products = $query->latest()->take(6)->get();
+        $products = $query->orderBy('id', 'asc')->take(6)->get();
 
         $results = $products->map(function ($product) {
             return [

@@ -11,9 +11,9 @@ class HomeController extends Controller
 {
     public function index()
     {
-        $featuredProducts = Product::active()->featured()->inStock()->with('category')->latest()->take(8)->get();
+        $featuredProducts = Product::active()->featured()->inStock()->with('category')->orderBy('id', 'asc')->take(8)->get();
         $categories = Category::active()->withCount('products')->get();
-        $newArrivals = Product::active()->inStock()->with('category')->latest()->take(4)->get();
+        $newArrivals = Product::active()->inStock()->with('category')->orderBy('id', 'asc')->take(4)->get();
         return view('home', compact('featuredProducts', 'categories', 'newArrivals'));
     }
 

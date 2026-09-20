@@ -23,6 +23,12 @@
                 </div>
 
                 <div class="form-group" style="margin-bottom: 20px;">
+                    <label for="product_id_prefix" style="display:block; margin-bottom: 8px;">Product ID Prefix</label>
+                    <input type="text" name="product_id_prefix" id="product_id_prefix" class="form-control" value="{{ $settings['product_id_prefix'] ?? 'NAWARIKA' }}" style="width: 100%; padding: 10px; background: var(--bg-tertiary); border: 1px solid var(--border-color); color: white; border-radius: 8px;" placeholder="e.g. NAWARIKA">
+                    <small style="color: var(--text-muted); display:block; margin-top: 4px;">Prefix used for product IDs on the product specification page.</small>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 20px;">
                     <label for="site_logo_dark" style="display:block; margin-bottom: 8px;">Site Logo (Dark Theme)</label>
                     @if(isset($settings['site_logo_dark']) && $settings['site_logo_dark'])
                         <div style="margin-bottom: 10px;">

@@ -286,7 +286,7 @@
                     </div>
                     <div class="cyber-spec-card">
                         <span class="cyber-spec-label">Product ID</span>
-                        <span class="cyber-spec-val">LUXE-{{ str_pad($product->id, 5, '0', STR_PAD_LEFT) }}</span>
+                        <span class="cyber-spec-val">{{ $settings['product_id_prefix'] ?? 'NAWARIKA' }}-{{ str_pad($product->id, 5, '0', STR_PAD_LEFT) }}</span>
                     </div>
                 </div>
             </div>

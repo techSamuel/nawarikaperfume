@@ -3,10 +3,10 @@
 
 @section('content')
 <div class="container" style="padding: 40px 20px;">
-    <div style="display: grid; grid-template-columns: 250px 1fr; gap: 32px; align-items: start;">
+    <div class="profile-layout">
         
         {{-- SIDEBAR --}}
-        <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; overflow: hidden; position: sticky; top: 100px;">
+        <div class="profile-sidebar">
             <div style="padding: 24px; text-align: center; border-bottom: 1px solid var(--border-color);">
                 <div style="width: 80px; height: 80px; border-radius: 50%; background: var(--accent-primary); color: white; display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: bold; margin: 0 auto 16px;">
                     {{ strtoupper(substr($user->name, 0, 1)) }}
@@ -14,13 +14,13 @@
                 <h3 style="margin-bottom: 4px; color: var(--text-primary); font-size: 1.2rem;">{{ $user->name }}</h3>
                 <p style="color: var(--text-muted); font-size: 0.9rem;">{{ $user->email }}</p>
             </div>
-            <div style="display: flex; flex-direction: column;">
+            <div class="profile-tabs-container">
                 <button class="profile-tab active" onclick="switchTab('profile')">Personal Info</button>
                 <button class="profile-tab" onclick="switchTab('security')">Security</button>
                 <button class="profile-tab" onclick="switchTab('orders')">Recent Orders</button>
-                <form method="POST" action="{{ route('logout') }}" style="margin: 0;">
+                <form method="POST" action="{{ route('logout') }}" style="margin: 0;" class="profile-tab" id="logout-form-btn">
                     @csrf
-                    <button type="submit" class="profile-tab" style="width: 100%; text-align: left; color: #ef4444;">Logout</button>
+                    <button type="submit" style="width: 100%; text-align: left; color: #ef4444; background: none; border: none; padding: 0; font: inherit; cursor: pointer;">Logout</button>
                 </form>
             </div>
         </div>
@@ -29,7 +29,7 @@
         <div class="profile-content">
             
             {{-- TAB: PROFILE --}}
-            <div id="tab-profile" class="tab-pane active" style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; padding: 32px;">
+            <div id="tab-profile" class="tab-pane active profile-tab-pane" style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; padding: 32px;">
                 <h2 style="margin-bottom: 8px; color: var(--text-primary);">Personal Information</h2>
                 <p style="color: var(--text-secondary); margin-bottom: 24px;">Update your account's profile information and email address.</p>
 
@@ -61,7 +61,7 @@
             </div>
 
             {{-- TAB: SECURITY --}}
-            <div id="tab-security" class="tab-pane" style="display: none; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; padding: 32px;">
+            <div id="tab-security" class="tab-pane profile-tab-pane" style="display: none; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; padding: 32px;">
                 <h2 style="margin-bottom: 8px; color: var(--text-primary);">Update Password</h2>
                 <p style="color: var(--text-secondary); margin-bottom: 24px;">Ensure your account is using a long, random password to stay secure.</p>
 
@@ -100,15 +100,15 @@
             </div>
 
             {{-- TAB: ORDERS --}}
-            <div id="tab-orders" class="tab-pane" style="display: none; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; padding: 32px;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+            <div id="tab-orders" class="tab-pane profile-tab-pane" style="display: none; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; padding: 32px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 10px;">
                     <h2 style="margin: 0; color: var(--text-primary);">Recent Orders</h2>
                     <a href="{{ route('account.orders') }}" class="btn btn-sm btn-outline">View All</a>
                 </div>
 
                 @if(isset($orders) && $orders->count() > 0)
                     <div style="overflow-x: auto;">
-                        <table style="width: 100%; border-collapse: collapse; text-align: left;">
+                        <table style="width: 100%; border-collapse: collapse; text-align: left; min-width: 500px;">
                             <thead>
                                 <tr style="border-bottom: 1px solid var(--border-color); color: var(--text-muted); font-size: 0.9rem;">
                                     <th style="padding: 12px;">Order #</th>
@@ -150,6 +150,22 @@
 </div>
 
 <style>
+    .profile-layout {
+        display: grid;
+        grid-template-columns: 250px 1fr;
+        gap: 32px;
+        align-items: start;
+    }
+    
+    .profile-sidebar {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 16px;
+        overflow: hidden;
+        position: sticky;
+        top: 100px;
+    }
+
     .profile-tab {
         background: transparent;
         border: none;
@@ -162,6 +178,8 @@
         cursor: pointer;
         transition: all 0.2s ease;
         border-bottom: 1px solid var(--border-color);
+        width: 100%;
+        display: block;
     }
     .profile-tab:last-child {
         border-bottom: none;
@@ -177,8 +195,52 @@
     }
     
     @media (max-width: 768px) {
-        .container > div {
-            grid-template-columns: 1fr !important;
+        .profile-layout {
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+        .profile-sidebar {
+            position: static;
+        }
+        .profile-tab {
+            border-left: none;
+            border-bottom: 2px solid transparent;
+            padding: 12px 16px;
+            text-align: center;
+        }
+        .profile-tab.active {
+            border-left: none;
+            border-bottom-color: var(--accent-primary);
+        }
+        .profile-tabs-container {
+            display: flex;
+            overflow-x: auto;
+            white-space: nowrap;
+            -webkit-overflow-scrolling: touch;
+        }
+        .profile-tab {
+            width: auto;
+            flex: 1;
+        }
+        .profile-tab-pane {
+            padding: 20px !important;
+        }
+    }
+    @media (max-width: 480px) {
+        .profile-tabs-container {
+            flex-direction: column;
+        }
+        .profile-tab {
+            border-left: 3px solid transparent;
+            border-bottom: 1px solid var(--border-color);
+            text-align: left;
+        }
+        .profile-tab.active {
+            border-bottom-color: var(--border-color);
+            border-left-color: var(--accent-primary);
+        }
+        .profile-tab:last-child {
+            border-bottom: none;
         }
     }
 </style>

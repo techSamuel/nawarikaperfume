@@ -60,6 +60,16 @@
                     </a>
                 </div>
                 <div class="sidebar-section">
+                    <div class="sidebar-section-title">Communications</div>
+                    <a href="{{ route('admin.contact-messages.index') }}" class="sidebar-link {{ request()->routeIs('admin.contact-messages.*') ? 'active' : '' }}">
+                        <span class="icon">✉️</span> Contact Messages
+                        @php $unreadMsgs = \App\Models\ContactMessage::where('is_read', false)->count(); @endphp
+                        @if($unreadMsgs > 0)
+                            <span class="sidebar-badge bg-primary text-white" style="background:var(--accent-primary);">{{ $unreadMsgs }}</span>
+                        @endif
+                    </a>
+                </div>
+                <div class="sidebar-section">
                     <div class="sidebar-section-title">Configuration</div>
                     <div style="display: flex; flex-direction: column; gap: 4px;">
                         <a href="{{ route('admin.settings.index', ['tab' => 'general']) }}" class="sidebar-link {{ request('tab', 'general') == 'general' && request()->routeIs('admin.settings.*') ? 'active' : '' }}" style="padding-left: 20px;">

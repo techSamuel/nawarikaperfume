@@ -22,6 +22,7 @@ Route::get('/track', [HomeController::class, 'trackPage'])->name('order.track.pa
 Route::get('/track-order', [HomeController::class, 'trackOrder'])->name('order.track');
 Route::get('/language/{locale}', [HomeController::class, 'switchLanguage'])->name('language.switch');
 Route::get('/contact', [HomeController::class, 'contact'])->name('contact');
+Route::post('/contact', [HomeController::class, 'submitContact'])->name('contact.submit');
 Route::get('/faq', [HomeController::class, 'faq'])->name('faq');
 Route::get('/shipping-policy', [HomeController::class, 'shippingPolicy'])->name('shipping.policy');
 Route::get('/return-policy', [HomeController::class, 'returnPolicy'])->name('return.policy');
@@ -105,6 +106,10 @@ Route::middleware(['auth', \App\Http\Middleware\AdminMiddleware::class])
 
         Route::get('/settings', [\App\Http\Controllers\Admin\SettingController::class, 'index'])->name('settings.index');
         Route::post('/settings', [\App\Http\Controllers\Admin\SettingController::class, 'store'])->name('settings.store');
+
+        Route::get('/contact-messages', [\App\Http\Controllers\Admin\ContactMessageController::class, 'index'])->name('contact-messages.index');
+        Route::get('/contact-messages/{contact_message}', [\App\Http\Controllers\Admin\ContactMessageController::class, 'show'])->name('contact-messages.show');
+        Route::delete('/contact-messages/{contact_message}', [\App\Http\Controllers\Admin\ContactMessageController::class, 'destroy'])->name('contact-messages.destroy');
 
         Route::get('/visitors', [VisitorLogController::class, 'index'])->name('visitors.index');
         Route::delete('/visitors/{visitorLog}', [VisitorLogController::class, 'destroy'])->name('visitors.destroy');

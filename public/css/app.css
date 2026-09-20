@@ -3779,3 +3779,44 @@ tbody tr:hover {
     align-items: center;
     justify-content: center;
 }
+
+/* Pagination Styles */
+.pagination {
+    display: flex;
+    padding-left: 0;
+    list-style: none;
+    gap: 5px;
+    justify-content: center;
+    margin-top: 20px;
+}
+.page-item .page-link {
+    position: relative;
+    display: block;
+    color: var(--text-primary);
+    text-decoration: none;
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    padding: 8px 16px;
+    border-radius: var(--radius-md);
+    transition: all 0.2s ease;
+}
+.page-item.active .page-link {
+    z-index: 3;
+    color: #fff;
+    background-color: var(--accent-primary);
+    border-color: var(--accent-primary);
+}
+.page-item.disabled .page-link {
+    color: var(--text-muted);
+    pointer-events: none;
+    background-color: var(--bg-secondary);
+    border-color: var(--border-color);
+}
+.page-link:hover {
+    z-index: 2;
+    color: var(--accent-primary);
+    background-color: var(--bg-secondary);
+    border-color: var(--accent-primary);
+}
+.w-5 { width: 1.25rem; }
+.h-5 { height: 1.25rem; }

@@ -11,14 +11,14 @@
         $socialImage = !empty($settings['social_preview_image']) ? asset('uploads/' . $settings['social_preview_image']) : (!empty($settings['site_logo_dark']) ? asset('uploads/' . $settings['site_logo_dark']) : '');
     @endphp
 
-    <title>@yield('title', $metaTitle)</title>
+    <title>@hasSection('title') @yield('title') | {{ $metaTitle }} @else {{ $metaTitle }} @endif</title>
     <meta name="description" content="@yield('meta_description', $metaDesc)">
     <meta name="keywords" content="@yield('meta_keywords', $metaKeywords)">
     
     <!-- Open Graph / Social Media Meta Tags -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ url()->current() }}">
-    <meta property="og:title" content="@yield('title', $metaTitle)">
+    <meta property="og:title" content="@hasSection('title') @yield('title') | {{ $metaTitle }} @else {{ $metaTitle }} @endif">
     <meta property="og:description" content="@yield('meta_description', $metaDesc)">
     @if($socialImage)
     <meta property="og:image" content="@yield('meta_image', $socialImage)">
@@ -26,7 +26,7 @@
     
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:url" content="{{ url()->current() }}">
-    <meta name="twitter:title" content="@yield('title', $metaTitle)">
+    <meta name="twitter:title" content="@hasSection('title') @yield('title') | {{ $metaTitle }} @else {{ $metaTitle }} @endif">
     <meta name="twitter:description" content="@yield('meta_description', $metaDesc)">
     @if($socialImage)
     <meta name="twitter:image" content="@yield('meta_image', $socialImage)">

@@ -1,6 +1,4 @@
 @extends('layouts.app')
-@section('title', 'Home')
-@section('meta_description', 'LUXE Store — Discover premium products with exclusive deals. Shop the latest collections with Cash on Delivery.')
 
 @section('content')
 @php

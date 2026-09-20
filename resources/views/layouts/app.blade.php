@@ -3,8 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="@yield('meta_description', 'LUXE Store — Premium shopping experience with exclusive collections and curated products.')">
-    <title>@yield('title', $settings['site_name'] ?? 'LUXE') — Premium E-Commerce</title>
+    @php
+        $defaultTitle = $settings['site_name'] ?? 'LUXE';
+        $metaTitle = $settings['meta_title'] ?: $defaultTitle;
+        $metaDesc = $settings['meta_description'] ?: 'Premium shopping experience with exclusive collections and curated products.';
+        $metaKeywords = $settings['meta_keywords'] ?: 'ecommerce, shop, online store';
+        $socialImage = !empty($settings['social_preview_image']) ? asset('uploads/' . $settings['social_preview_image']) : (!empty($settings['site_logo_dark']) ? asset('uploads/' . $settings['site_logo_dark']) : '');
+    @endphp
+
+    <title>@yield('title', $metaTitle)</title>
+    <meta name="description" content="@yield('meta_description', $metaDesc)">
+    <meta name="keywords" content="@yield('meta_keywords', $metaKeywords)">
+    
+    <!-- Open Graph / Social Media Meta Tags -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:title" content="@yield('title', $metaTitle)">
+    <meta property="og:description" content="@yield('meta_description', $metaDesc)">
+    @if($socialImage)
+    <meta property="og:image" content="@yield('meta_image', $socialImage)">
+    @endif
+    
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="{{ url()->current() }}">
+    <meta name="twitter:title" content="@yield('title', $metaTitle)">
+    <meta name="twitter:description" content="@yield('meta_description', $metaDesc)">
+    @if($socialImage)
+    <meta name="twitter:image" content="@yield('meta_image', $socialImage)">
+    @endif
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     <!-- Google Fonts are loaded in app.css -->
     <!-- Swiper CSS & JS -->

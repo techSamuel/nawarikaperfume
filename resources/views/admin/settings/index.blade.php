@@ -91,6 +91,17 @@
                     <label for="meta_keywords" style="display:block; margin-bottom: 8px;">Meta Keywords</label>
                     <input type="text" name="meta_keywords" id="meta_keywords" class="form-control" value="{{ $settings['meta_keywords'] ?? '' }}" placeholder="keyword1, keyword2, keyword3" style="width: 100%; padding: 10px; background: var(--bg-tertiary); border: 1px solid var(--border-color); color: white; border-radius: 8px;">
                 </div>
+                
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <label for="social_preview_image" style="display:block; margin-bottom: 8px;">Social Media Preview Image</label>
+                    @if(isset($settings['social_preview_image']) && $settings['social_preview_image'])
+                        <div style="margin-bottom: 10px;">
+                            <img src="{{ asset('uploads/' . $settings['social_preview_image']) }}" alt="Social Preview" style="height: 100px; border-radius: 4px; object-fit: cover;">
+                        </div>
+                    @endif
+                    <input type="file" name="social_preview_image" id="social_preview_image" class="form-control" accept=".png,.jpg,.jpeg,.webp" style="width: 100%; padding: 10px; background: var(--bg-tertiary); border: 1px solid var(--border-color); color: white; border-radius: 8px;">
+                    <small style="color: var(--text-muted); display:block; margin-top: 4px;">Recommended size: 1200x630 pixels. Used when sharing your site on Facebook, Twitter, WhatsApp, etc.</small>
+                </div>
                 <h3 style="margin-bottom: 16px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; margin-top: 32px;">Delivery Settings</h3>
 
                 <div class="form-group" style="margin-bottom: 20px;">

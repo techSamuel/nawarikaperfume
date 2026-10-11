@@ -189,6 +189,9 @@ class CheckoutController extends Controller
             DB::commit();
             session()->forget('cart');
 
+            // Dispatch Admin Email Notification
+            app(\App\Services\MailConfigService::class)->sendAdminNewOrderNotification($order);
+
             return redirect()->route('order.confirmation', $order->order_number)
                 ->with('success', 'Order placed successfully!');
 

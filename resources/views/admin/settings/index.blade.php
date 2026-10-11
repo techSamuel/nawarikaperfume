@@ -10,6 +10,7 @@
         @php
             $navTabs = [
                 'general' => ['icon' => '⚙️', 'label' => 'General'],
+                'smtp' => ['icon' => '✉️', 'label' => 'SMTP & Email'],
                 'home' => ['icon' => '🏠', 'label' => 'Home Page'],
                 'contact' => ['icon' => '📞', 'label' => 'Contact'],
                 'checkout' => ['icon' => '🛒', 'label' => 'Checkout'],
@@ -141,6 +142,155 @@
                     <input type="number" step="0.01" name="free_delivery_threshold" id="free_delivery_threshold" class="form-control" value="{{ $settings['free_delivery_threshold'] ?? '500' }}" placeholder="e.g. 1000" style="width: 100%; padding: 10px; background: var(--bg-tertiary); border: 1px solid var(--border-color); color: white; border-radius: 8px;">
                     <small style="color: var(--text-muted); display:block; margin-top: 4px;">Leave blank for no free delivery. If order subtotal is greater than or equal to this amount, delivery is free.</small>
                 </div>
+            </div>
+            @endif
+
+            @if($tab == 'smtp')
+            {{-- SMTP & EMAIL NOTIFICATION SETTINGS --}}
+            <div>
+                <h3 style="margin-bottom: 16px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px;">Order Notification Alerts</h3>
+                
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <label for="admin_order_notification_email" style="display:block; margin-bottom: 8px; font-weight: 600;">
+                        Admin Notification Email (New Orders) <span style="color:#ef4444;">*</span>
+                    </label>
+                    <input type="text" name="admin_order_notification_email" id="admin_order_notification_email" class="form-control" value="{{ $settings['admin_order_notification_email'] ?? '' }}" placeholder="admin@nawarika.store, orders@nawarika.store" style="width: 100%; padding: 10px; background: var(--bg-tertiary); border: 1px solid var(--border-color); color: white; border-radius: 8px;">
+                    <small style="color: var(--text-muted); display:block; margin-top: 4px;">
+                        When a customer places a new order, an immediate alert email with full order details will be sent to this email address. (You can enter multiple emails separated by commas).
+                    </small>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <label style="display:flex; align-items:center; gap:10px; cursor:pointer;">
+                        <input type="hidden" name="customer_order_email_enabled" value="0">
+                        <input type="checkbox" name="customer_order_email_enabled" value="1" {{ ($settings['customer_order_email_enabled'] ?? '1') == '1' ? 'checked' : '' }} style="width:18px; height:18px; accent-color: var(--accent-primary);">
+                        <span style="font-weight: 600;">Send Status Update Emails to Customers</span>
+                    </label>
+                    <small style="color: var(--text-muted); display:block; margin-top: 4px; margin-left: 28px;">
+                        Logged-in users and customers who provide an email address will receive an automated email whenever their order status is updated (Confirmed, Processing, Shipped, Delivered, Cancelled).
+                    </small>
+                </div>
+
+                <div style="background: rgba(14, 165, 233, 0.08); border: 1px solid rgba(14, 165, 233, 0.25); border-radius: 8px; padding: 16px; margin-top: 24px;">
+                    <h4 style="margin: 0 0 8px 0; color: #38bdf8; font-size: 0.95rem;">💡 How SMTP Mail Works</h4>
+                    <p style="margin: 0; font-size: 0.85rem; color: #cbd5e1; line-height: 1.5;">
+                        Configure your mail server details on the right (Gmail, cPanel Webmail, Brevo, SendGrid, Amazon SES, etc.). Use the "Send Test Email" tool below to confirm your configuration is working in real-time.
+                    </p>
+                </div>
+            </div>
+
+            <div>
+                <h3 style="margin-bottom: 16px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px;">SMTP Server Credentials</h3>
+
+                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 12px; margin-bottom: 16px;">
+                    <div class="form-group">
+                        <label for="mail_host" style="display:block; margin-bottom: 8px;">SMTP Host</label>
+                        <input type="text" name="mail_host" id="mail_host" class="form-control" value="{{ $settings['mail_host'] ?? env('MAIL_HOST', '') }}" placeholder="e.g. smtp.gmail.com or mail.nawarika.store" style="width: 100%; padding: 10px; background: var(--bg-tertiary); border: 1px solid var(--border-color); color: white; border-radius: 8px;">
+                    </div>
+                    <div class="form-group">
+                        <label for="mail_port" style="display:block; margin-bottom: 8px;">Port</label>
+                        <input type="number" name="mail_port" id="mail_port" class="form-control" value="{{ $settings['mail_port'] ?? env('MAIL_PORT', '587') }}" placeholder="587" style="width: 100%; padding: 10px; background: var(--bg-tertiary); border: 1px solid var(--border-color); color: white; border-radius: 8px;">
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 16px;">
+                    <label for="mail_encryption" style="display:block; margin-bottom: 8px;">Encryption</label>
+                    <select name="mail_encryption" id="mail_encryption" class="form-control" style="width: 100%; padding: 10px; background: var(--bg-tertiary); border: 1px solid var(--border-color); color: white; border-radius: 8px;">
+                        <option value="tls" {{ ($settings['mail_encryption'] ?? env('MAIL_ENCRYPTION', 'tls')) == 'tls' ? 'selected' : '' }}>TLS (Recommended for port 587)</option>
+                        <option value="ssl" {{ ($settings['mail_encryption'] ?? env('MAIL_ENCRYPTION')) == 'ssl' ? 'selected' : '' }}>SSL (Recommended for port 465)</option>
+                        <option value="none" {{ ($settings['mail_encryption'] ?? env('MAIL_ENCRYPTION')) == 'none' ? 'selected' : '' }}>None</option>
+                    </select>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 16px;">
+                    <label for="mail_username" style="display:block; margin-bottom: 8px;">SMTP Username / Email</label>
+                    <input type="text" name="mail_username" id="mail_username" class="form-control" value="{{ $settings['mail_username'] ?? env('MAIL_USERNAME', '') }}" placeholder="your-email@gmail.com" style="width: 100%; padding: 10px; background: var(--bg-tertiary); border: 1px solid var(--border-color); color: white; border-radius: 8px;">
+                </div>
+
+                <div class="form-group" style="margin-bottom: 16px;">
+                    <label for="mail_password" style="display:block; margin-bottom: 8px;">SMTP Password / App Password</label>
+                    <div style="position: relative;">
+                        <input type="password" name="mail_password" id="mail_password" class="form-control" value="{{ $settings['mail_password'] ?? env('MAIL_PASSWORD', '') }}" placeholder="••••••••••••" style="width: 100%; padding: 10px; padding-right: 40px; background: var(--bg-tertiary); border: 1px solid var(--border-color); color: white; border-radius: 8px;">
+                        <button type="button" onclick="const p = document.getElementById('mail_password'); p.type = p.type === 'password' ? 'text' : 'password';" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-muted); cursor: pointer;" title="Show/Hide">👁️</button>
+                    </div>
+                    <small style="color: var(--text-muted); display:block; margin-top: 4px;">For Gmail, use a Google "App Password" rather than your normal password.</small>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px;">
+                    <div class="form-group">
+                        <label for="mail_from_address" style="display:block; margin-bottom: 8px;">Sender Email (From)</label>
+                        <input type="email" name="mail_from_address" id="mail_from_address" class="form-control" value="{{ $settings['mail_from_address'] ?? env('MAIL_FROM_ADDRESS', '') }}" placeholder="noreply@nawarika.store" style="width: 100%; padding: 10px; background: var(--bg-tertiary); border: 1px solid var(--border-color); color: white; border-radius: 8px;">
+                    </div>
+                    <div class="form-group">
+                        <label for="mail_from_name" style="display:block; margin-bottom: 8px;">Sender Name</label>
+                        <input type="text" name="mail_from_name" id="mail_from_name" class="form-control" value="{{ $settings['mail_from_name'] ?? env('MAIL_FROM_NAME', 'Nawarika Perfume') }}" placeholder="Nawarika Perfume" style="width: 100%; padding: 10px; background: var(--bg-tertiary); border: 1px solid var(--border-color); color: white; border-radius: 8px;">
+                    </div>
+                </div>
+
+                {{-- SMTP TEST DIAGNOSTIC BOX --}}
+                <div style="background: var(--bg-tertiary); border: 1px solid var(--border-color); border-radius: 8px; padding: 16px;">
+                    <h4 style="margin: 0 0 10px 0; font-size: 0.95rem;">🧪 Send Test Email</h4>
+                    <div style="display: flex; gap: 8px;">
+                        <input type="email" id="test_smtp_email" placeholder="recipient@example.com" value="{{ auth()->user()->email ?? '' }}" style="flex: 1; padding: 8px 12px; background: var(--bg-card); border: 1px solid var(--border-color); color: white; border-radius: 6px;">
+                        <button type="button" onclick="sendTestSmtp()" id="btnTestSmtp" class="btn btn-outline" style="white-space: nowrap; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 600; border-color: var(--accent-primary); color: var(--accent-primary);">
+                            📨 Send Test
+                        </button>
+                    </div>
+                    <div id="smtpTestResult" style="margin-top: 10px; font-size: 0.85rem; display: none;"></div>
+                </div>
+
+                <script>
+                    function sendTestSmtp() {
+                        const emailInput = document.getElementById('test_smtp_email');
+                        const btn = document.getElementById('btnTestSmtp');
+                        const resultDiv = document.getElementById('smtpTestResult');
+                        const email = emailInput.value.trim();
+
+                        if (!email) {
+                            alert('Please enter an email address to send the test.');
+                            return;
+                        }
+
+                        btn.disabled = true;
+                        btn.innerText = 'Sending...';
+                        resultDiv.style.display = 'block';
+                        resultDiv.innerHTML = '<span style="color: #60a5fa;">⏳ Testing SMTP server connection and sending email...</span>';
+
+                        fetch('{{ route("admin.settings.test-smtp") }}', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                'Accept': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                test_email: email,
+                                mail_host: document.getElementById('mail_host').value,
+                                mail_port: document.getElementById('mail_port').value,
+                                mail_encryption: document.getElementById('mail_encryption').value,
+                                mail_username: document.getElementById('mail_username').value,
+                                mail_password: document.getElementById('mail_password').value,
+                                mail_from_address: document.getElementById('mail_from_address').value,
+                                mail_from_name: document.getElementById('mail_from_name').value
+                            })
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.success) {
+                                resultDiv.innerHTML = '<span style="color: #4ade80;">' + data.message + '</span>';
+                            } else {
+                                resultDiv.innerHTML = '<span style="color: #f87171;">' + data.message + '</span>';
+                            }
+                        })
+                        .catch(err => {
+                            resultDiv.innerHTML = '<span style="color: #f87171;">Network error: ' + err.message + '</span>';
+                        })
+                        .finally(() => {
+                            btn.disabled = false;
+                            btn.innerText = '📨 Send Test';
+                        });
+                    }
+                </script>
             </div>
             @endif
 

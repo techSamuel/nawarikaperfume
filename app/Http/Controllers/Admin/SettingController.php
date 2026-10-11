@@ -124,4 +124,30 @@ class SettingController extends Controller
             ]);
         }
     }
+
+    public function testSmtp(Request $request, \App\Services\MailConfigService $mailService)
+    {
+        $testEmail = trim($request->input('test_email'));
+        if (empty($testEmail) || !filter_var($testEmail, FILTER_VALIDATE_EMAIL)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Please provide a valid recipient email address to test.'
+            ]);
+        }
+
+        $override = [
+            'mail_mailer' => $request->input('mail_mailer'),
+            'mail_host' => $request->input('mail_host'),
+            'mail_port' => $request->input('mail_port'),
+            'mail_username' => $request->input('mail_username'),
+            'mail_password' => $request->input('mail_password'),
+            'mail_encryption' => $request->input('mail_encryption'),
+            'mail_from_address' => $request->input('mail_from_address'),
+            'mail_from_name' => $request->input('mail_from_name'),
+        ];
+
+        $result = $mailService->testConnection($testEmail, $override);
+
+        return response()->json($result);
+    }
 }

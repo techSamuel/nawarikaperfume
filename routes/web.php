@@ -117,13 +117,18 @@ Route::middleware(['auth', \App\Http\Middleware\AdminMiddleware::class])
 
         Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
         Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
+        Route::put('/orders/{order}', [OrderController::class, 'update'])->name('orders.update');
         Route::patch('/orders/{order}/status', [OrderController::class, 'updateStatus'])->name('orders.update-status');
         Route::delete('/orders/{order}', [OrderController::class, 'destroy'])->name('orders.destroy');
+
+        Route::resource('users', \App\Http\Controllers\Admin\UserController::class)->except(['create', 'store']);
+        Route::post('/users/{user}/toggle-ban', [\App\Http\Controllers\Admin\UserController::class, 'toggleBan'])->name('users.toggle-ban');
 
         Route::get('/settings', [\App\Http\Controllers\Admin\SettingController::class, 'index'])->name('settings.index');
         Route::post('/settings', [\App\Http\Controllers\Admin\SettingController::class, 'store'])->name('settings.store');
         Route::post('/settings/test-gemini', [\App\Http\Controllers\Admin\SettingController::class, 'testGemini'])->name('settings.test-gemini');
         Route::post('/settings/test-capi', [\App\Http\Controllers\Admin\SettingController::class, 'testCapi'])->name('settings.test-capi');
+        Route::post('/settings/test-smtp', [\App\Http\Controllers\Admin\SettingController::class, 'testSmtp'])->name('settings.test-smtp');
 
         Route::get('/contact-messages', [\App\Http\Controllers\Admin\ContactMessageController::class, 'index'])->name('contact-messages.index');
         Route::get('/contact-messages/{contact_message}', [\App\Http\Controllers\Admin\ContactMessageController::class, 'show'])->name('contact-messages.show');

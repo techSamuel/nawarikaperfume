@@ -4,6 +4,9 @@
 @section('header_actions')
     <div style="display:flex; gap:10px; align-items:center;">
         <a href="{{ route('admin.orders.index') }}" class="btn btn-outline btn-sm">← Back to Orders</a>
+        <button type="button" onclick="document.getElementById('editOrderModal').style.display = 'flex';" class="btn btn-primary btn-sm">
+            ✏️ Edit Order
+        </button>
         <form action="{{ route('admin.orders.destroy', $order) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete Order #{{ $order->order_number }}? This action cannot be undone.');" style="display:inline;">
             @csrf
             @method('DELETE')
@@ -15,6 +18,78 @@
 @endsection
 
 @section('content')
+{{-- EDIT ORDER MODAL --}}
+<div id="editOrderModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.75); z-index:9999; align-items:center; justify-content:center; padding:16px; overflow-y:auto;">
+    <div style="background:var(--bg-card); border:1px solid var(--border-color); border-radius:12px; max-width:620px; width:100%; max-height:90vh; overflow-y:auto; padding:24px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; border-bottom:1px solid var(--border-color); padding-bottom:12px;">
+            <h3 style="margin:0; font-size:1.15rem; color:var(--text-primary);">✏️ Edit Order #{{ $order->order_number }}</h3>
+            <button type="button" onclick="document.getElementById('editOrderModal').style.display = 'none';" style="background:none; border:none; color:var(--text-muted); font-size:1.3rem; cursor:pointer;">&times;</button>
+        </div>
+        <p style="color:var(--text-secondary); font-size:0.85rem; margin-bottom:16px;">
+            Update customer info, address, delivery charge, or status. The customer will automatically receive an email detailing any changes made.
+        </p>
+
+        <form action="{{ route('admin.orders.update', $order) }}" method="POST">
+            @csrf
+            @method('PUT')
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px;">
+                <div class="form-group">
+                    <label style="display:block; margin-bottom:6px; font-size:0.85rem; font-weight:600;">Recipient Name <span style="color:#ef4444;">*</span></label>
+                    <input type="text" name="name" value="{{ old('name', $order->name) }}" required class="form-control" style="width:100%; padding:9px 12px; background:var(--bg-tertiary); border:1px solid var(--border-color); color:white; border-radius:6px;">
+                </div>
+                <div class="form-group">
+                    <label style="display:block; margin-bottom:6px; font-size:0.85rem; font-weight:600;">Phone Number <span style="color:#ef4444;">*</span></label>
+                    <input type="text" name="phone" value="{{ old('phone', $order->phone) }}" required class="form-control" style="width:100%; padding:9px 12px; background:var(--bg-tertiary); border:1px solid var(--border-color); color:white; border-radius:6px;">
+                </div>
+            </div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px;">
+                <div class="form-group">
+                    <label style="display:block; margin-bottom:6px; font-size:0.85rem; font-weight:600;">Customer Email</label>
+                    <input type="email" name="email" value="{{ old('email', $order->email) }}" placeholder="Optional (for notifications)" class="form-control" style="width:100%; padding:9px 12px; background:var(--bg-tertiary); border:1px solid var(--border-color); color:white; border-radius:6px;">
+                </div>
+                <div class="form-group">
+                    <label style="display:block; margin-bottom:6px; font-size:0.85rem; font-weight:600;">City / Area</label>
+                    <input type="text" name="city" value="{{ old('city', $order->city) }}" placeholder="e.g. Dhaka, Chittagong" class="form-control" style="width:100%; padding:9px 12px; background:var(--bg-tertiary); border:1px solid var(--border-color); color:white; border-radius:6px;">
+                </div>
+            </div>
+
+            <div class="form-group" style="margin-bottom:14px;">
+                <label style="display:block; margin-bottom:6px; font-size:0.85rem; font-weight:600;">Delivery Address <span style="color:#ef4444;">*</span></label>
+                <textarea name="address" rows="2" required class="form-control" style="width:100%; padding:9px 12px; background:var(--bg-tertiary); border:1px solid var(--border-color); color:white; border-radius:6px;">{{ old('address', $order->address) }}</textarea>
+            </div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px;">
+                <div class="form-group">
+                    <label style="display:block; margin-bottom:6px; font-size:0.85rem; font-weight:600;">Order Status <span style="color:#ef4444;">*</span></label>
+                    <select name="status" class="form-control" style="width:100%; padding:9px 12px; background:var(--bg-tertiary); border:1px solid var(--border-color); color:white; border-radius:6px;">
+                        <option value="pending" {{ old('status', $order->status) === 'pending' ? 'selected' : '' }}>Pending</option>
+                        <option value="processing" {{ old('status', $order->status) === 'processing' ? 'selected' : '' }}>Processing</option>
+                        <option value="confirm" {{ old('status', $order->status) === 'confirm' ? 'selected' : '' }}>Confirm</option>
+                        <option value="shipped" {{ old('status', $order->status) === 'shipped' ? 'selected' : '' }}>Shipped</option>
+                        <option value="delivered" {{ old('status', $order->status) === 'delivered' ? 'selected' : '' }}>Delivered</option>
+                        <option value="cancelled" {{ old('status', $order->status) === 'cancelled' ? 'selected' : '' }}>Cancelled</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label style="display:block; margin-bottom:6px; font-size:0.85rem; font-weight:600;">Shipping Charge (৳) <span style="color:#ef4444;">*</span></label>
+                    <input type="number" step="0.01" min="0" name="shipping" value="{{ old('shipping', $order->shipping) }}" required class="form-control" style="width:100%; padding:9px 12px; background:var(--bg-tertiary); border:1px solid var(--border-color); color:white; border-radius:6px;">
+                </div>
+            </div>
+
+            <div class="form-group" style="margin-bottom:20px;">
+                <label style="display:block; margin-bottom:6px; font-size:0.85rem; font-weight:600;">Order Notes</label>
+                <textarea name="notes" rows="2" placeholder="Special customer instructions..." class="form-control" style="width:100%; padding:9px 12px; background:var(--bg-tertiary); border:1px solid var(--border-color); color:white; border-radius:6px;">{{ old('notes', $order->notes) }}</textarea>
+            </div>
+
+            <div style="display:flex; justify-content:flex-end; gap:10px; border-top:1px solid var(--border-color); padding-top:14px;">
+                <button type="button" onclick="document.getElementById('editOrderModal').style.display = 'none';" class="btn btn-outline btn-sm">Cancel</button>
+                <button type="submit" class="btn btn-primary btn-sm" style="font-weight:700;">💾 Save Changes & Notify</button>
+            </div>
+        </form>
+    </div>
+</div>
 {{-- STATUS UPDATE --}}
 <div class="admin-card" style="margin-bottom:24px;">
     <div class="admin-card-body" style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:16px;">

@@ -50,6 +50,16 @@ class LoginRequest extends FormRequest
             ]);
         }
 
+        if (Auth::user()?->isBanned()) {
+            $reason = Auth::user()->ban_reason ? ' Reason: ' . Auth::user()->ban_reason : '';
+            Auth::logout();
+            RateLimiter::hit($this->throttleKey());
+
+            throw ValidationException::withMessages([
+                'email' => 'Your account has been suspended by an administrator.' . $reason,
+            ]);
+        }
+
         RateLimiter::clear($this->throttleKey());
     }
 

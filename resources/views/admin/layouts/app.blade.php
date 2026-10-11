@@ -57,6 +57,16 @@
                     </a>
                 </div>
                 <div class="sidebar-section">
+                    <div class="sidebar-section-title">Users</div>
+                    <a href="{{ route('admin.users.index') }}" class="sidebar-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
+                        <span class="icon">👥</span> Users
+                        @php $bannedUsersCount = \App\Models\User::where('is_banned', true)->count(); @endphp
+                        @if($bannedUsersCount > 0)
+                            <span class="sidebar-badge" style="background:#ef4444; color:#fff;" title="{{ $bannedUsersCount }} Banned">{{ $bannedUsersCount }}</span>
+                        @endif
+                    </a>
+                </div>
+                <div class="sidebar-section">
                     <div class="sidebar-section-title">Analytics</div>
                     <a href="{{ route('admin.visitors.index') }}" class="sidebar-link {{ request()->routeIs('admin.visitors.*') ? 'active' : '' }}">
                         <span class="icon">📊</span> Visitor Logs
@@ -77,6 +87,9 @@
                     <div style="display: flex; flex-direction: column; gap: 4px;">
                         <a href="{{ route('admin.settings.index', ['tab' => 'general']) }}" class="sidebar-link {{ request('tab', 'general') == 'general' && request()->routeIs('admin.settings.*') ? 'active' : '' }}" style="padding-left: 20px;">
                             <span class="icon">⚙️</span> General
+                        </a>
+                        <a href="{{ route('admin.settings.index', ['tab' => 'smtp']) }}" class="sidebar-link {{ request('tab') == 'smtp' && request()->routeIs('admin.settings.*') ? 'active' : '' }}" style="padding-left: 20px;">
+                            <span class="icon">✉️</span> SMTP & Email
                         </a>
                         <a href="{{ route('admin.settings.index', ['tab' => 'home']) }}" class="sidebar-link {{ request('tab') == 'home' && request()->routeIs('admin.settings.*') ? 'active' : '' }}" style="padding-left: 20px;">
                             <span class="icon">🏠</span> Home Page
@@ -113,10 +126,10 @@
             </nav>
             <div class="sidebar-footer">
                 <div class="sidebar-user">
-                    <div class="sidebar-avatar">{{ strtoupper(substr(auth()->user()->name, 0, 1)) }}</div>
+                    <div class="sidebar-avatar">{{ strtoupper(substr(auth()->user()?->name ?? 'A', 0, 1)) }}</div>
                     <div class="sidebar-user-info">
-                        <div class="sidebar-user-name">{{ auth()->user()->name }}</div>
-                        <div class="sidebar-user-role">Administrator</div>
+                        <div class="sidebar-user-name">{{ auth()->user()?->name ?? 'Administrator' }}</div>
+                        <div class="sidebar-user-role">{{ auth()->user()?->isAdmin() ? 'Administrator' : 'User' }}</div>
                     </div>
                 </div>
             </div>

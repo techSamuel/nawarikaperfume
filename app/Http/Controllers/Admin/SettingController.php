@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use App\Models\Setting;
 use Illuminate\Support\Facades\Storage;
 
+use App\Services\GeminiService;
+
 class SettingController extends Controller
 {
     public function index()
@@ -41,5 +43,15 @@ class SettingController extends Controller
         \Illuminate\Support\Facades\Cache::forget('site_settings');
 
         return redirect()->route('admin.settings.index', ['tab' => $currentTab])->with('success', 'Settings updated successfully.');
+    }
+
+    public function testGemini(Request $request, GeminiService $gemini)
+    {
+        $apiKey = $request->input('gemini_api_key');
+        $model = $request->input('gemini_model');
+
+        $result = $gemini->testConnection($apiKey, $model);
+
+        return response()->json($result);
     }
 }

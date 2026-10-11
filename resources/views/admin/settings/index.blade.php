@@ -6,6 +6,26 @@
 @section('content')
 @php $tab = request('tab', 'general'); @endphp
 <div class="card" style="background: var(--bg-card); padding: 24px; border-radius: 12px; border: 1px solid var(--border-color);">
+    <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 24px; border-bottom: 1px solid var(--border-color); padding-bottom: 14px;">
+        @php
+            $navTabs = [
+                'general' => ['icon' => '⚙️', 'label' => 'General'],
+                'home' => ['icon' => '🏠', 'label' => 'Home Page'],
+                'contact' => ['icon' => '📞', 'label' => 'Contact'],
+                'checkout' => ['icon' => '🛒', 'label' => 'Checkout'],
+                'tracking' => ['icon' => '📈', 'label' => 'Tracking & API'],
+                'ai' => ['icon' => '🤖', 'label' => 'AI & Gemini'],
+                'policies' => ['icon' => '📜', 'label' => 'Policy Pages'],
+            ];
+        @endphp
+        @foreach($navTabs as $tabKey => $tabInfo)
+            <a href="{{ route('admin.settings.index', ['tab' => $tabKey]) }}" style="padding: 8px 16px; border-radius: 8px; font-size: 0.88rem; font-weight: 600; text-decoration: none; display: flex; align-items: center; gap: 6px; transition: all 0.2s; {{ $tab == $tabKey ? 'background: var(--accent-gradient); color: white;' : 'background: var(--bg-tertiary); color: var(--text-secondary); border: 1px solid var(--border-color);' }}">
+                <span>{{ $tabInfo['icon'] }}</span>
+                <span>{{ $tabInfo['label'] }}</span>
+            </a>
+        @endforeach
+    </div>
+
     <form action="{{ route('admin.settings.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
         <input type="hidden" name="current_tab" value="{{ $tab }}">
@@ -362,6 +382,186 @@
                         <small style="color: var(--text-muted); display:block; margin-top: 4px;">Currently stored for future backend event integrations.</small>
                     </div>
                 </div>
+            </div>
+            @if($tab == 'ai')
+            {{-- AI & GEMINI SETTINGS --}}
+            <div style="grid-column: span 2;">
+                <div style="background: linear-gradient(135deg, rgba(124, 58, 237, 0.12) 0%, rgba(59, 130, 246, 0.08) 100%); border: 1px solid rgba(124, 58, 237, 0.3); border-radius: 12px; padding: 24px; margin-bottom: 24px;">
+                    <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 12px;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div style="width: 44px; height: 44px; border-radius: 10px; background: linear-gradient(135deg, #7c3aed 0%, #3b82f6 100%); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);">
+                                🤖
+                            </div>
+                            <div>
+                                <h3 style="margin: 0; color: #fff; font-size: 1.25rem; font-weight: 700;">Google Gemini AI Settings</h3>
+                                <p style="margin: 4px 0 0; color: var(--text-muted); font-size: 0.88rem;">
+                                    Configure Google Gemini API for automated customer review generation on product edit pages.
+                                </p>
+                            </div>
+                        </div>
+                        <span style="font-size: 0.75rem; padding: 4px 10px; background: rgba(59, 130, 246, 0.2); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.4); border-radius: 20px; font-weight: 600;">
+                            Endpoint: v1beta/interactions
+                        </span>
+                    </div>
+
+                    <div style="background: rgba(0, 0, 0, 0.25); border-radius: 8px; padding: 12px 16px; font-size: 0.82rem; color: #cbd5e1; border-left: 3px solid #7c3aed;">
+                        💡 <strong>How it works:</strong> Product title, category, price, and description are passed to Google Gemini to synthesize realistic, authentic reviews with customizable ratings and languages (Bengali, Banglish, English).
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+                    {{-- API Key --}}
+                    <div class="form-group" style="grid-column: span 2;">
+                        <label for="gemini_api_key" style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-weight: 600;">
+                            <span>Google Gemini API Key <span style="color: #ef4444;">*</span></span>
+                            <a href="https://aistudio.google.com/app/apikey" target="_blank" style="font-size: 0.8rem; color: #a78bfa; text-decoration: none; display: flex; align-items: center; gap: 4px;">
+                                🔑 Get Gemini API Key (Google AI Studio) ↗
+                            </a>
+                        </label>
+                        <div style="position: relative;">
+                            <input type="password" name="gemini_api_key" id="gemini_api_key" class="form-control" value="{{ $settings['gemini_api_key'] ?? '' }}" placeholder="AIzaSy..." style="width: 100%; padding: 12px 90px 12px 14px; background: var(--bg-tertiary); border: 1px solid var(--border-color); color: white; border-radius: 8px; font-family: monospace; font-size: 0.95rem;">
+                            <button type="button" onclick="toggleApiKeyVisibility()" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.08); border: 1px solid var(--border-color); color: #cbd5e1; padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; cursor: pointer;">
+                                <span id="toggleKeyText">Show</span>
+                            </button>
+                        </div>
+                        <small style="color: var(--text-muted); display:block; margin-top: 6px;">Your API key is stored securely in your database settings.</small>
+                    </div>
+
+                    {{-- Model Selection --}}
+                    <div class="form-group" style="grid-column: span 2;">
+                        <label for="gemini_model" style="display:block; margin-bottom: 8px; font-weight: 600;">Gemini Model</label>
+                        <input type="text" name="gemini_model" id="gemini_model" class="form-control" value="{{ $settings['gemini_model'] ?? 'gemini-2.5-flash' }}" placeholder="e.g. gemini-2.5-flash, gemini-3.8-flash" style="width: 100%; padding: 12px 14px; background: var(--bg-tertiary); border: 1px solid var(--border-color); color: white; border-radius: 8px; font-family: monospace; font-size: 0.95rem;">
+                        <div style="margin-top: 8px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                            <span style="font-size: 0.78rem; color: var(--text-muted);">Quick Select:</span>
+                            <button type="button" class="btn-model-chip" onclick="selectModel('gemini-2.5-flash')" style="padding: 4px 10px; background: rgba(124,58,237,0.15); border: 1px solid rgba(124,58,237,0.4); color: #c4b5fd; border-radius: 14px; font-size: 0.75rem; cursor: pointer;">gemini-2.5-flash (Recommended)</button>
+                            <button type="button" class="btn-model-chip" onclick="selectModel('gemini-3.8-flash')" style="padding: 4px 10px; background: rgba(59,130,246,0.15); border: 1px solid rgba(59,130,246,0.4); color: #93c5fd; border-radius: 14px; font-size: 0.75rem; cursor: pointer;">gemini-3.8-flash</button>
+                            <button type="button" class="btn-model-chip" onclick="selectModel('gemini-2.0-flash')" style="padding: 4px 10px; background: rgba(255,255,255,0.06); border: 1px solid var(--border-color); color: #cbd5e1; border-radius: 14px; font-size: 0.75rem; cursor: pointer;">gemini-2.0-flash</button>
+                            <button type="button" class="btn-model-chip" onclick="selectModel('gemini-1.5-flash')" style="padding: 4px 10px; background: rgba(255,255,255,0.06); border: 1px solid var(--border-color); color: #cbd5e1; border-radius: 14px; font-size: 0.75rem; cursor: pointer;">gemini-1.5-flash</button>
+                            <button type="button" class="btn-model-chip" onclick="selectModel('gemini-1.5-pro')" style="padding: 4px 10px; background: rgba(255,255,255,0.06); border: 1px solid var(--border-color); color: #cbd5e1; border-radius: 14px; font-size: 0.75rem; cursor: pointer;">gemini-1.5-pro</button>
+                        </div>
+                    </div>
+
+                    {{-- Default Review Language --}}
+                    <div class="form-group">
+                        <label for="gemini_default_review_lang" style="display:block; margin-bottom: 8px; font-weight: 600;">Default Review Language</label>
+                        <select name="gemini_default_review_lang" id="gemini_default_review_lang" class="form-control" style="width: 100%; padding: 12px 14px; background: var(--bg-tertiary); border: 1px solid var(--border-color); color: white; border-radius: 8px;">
+                            <option value="mixed" {{ ($settings['gemini_default_review_lang'] ?? 'mixed') == 'mixed' ? 'selected' : '' }}>Natural Mix (Bangla, English & Banglish)</option>
+                            <option value="bangla" {{ ($settings['gemini_default_review_lang'] ?? 'mixed') == 'bangla' ? 'selected' : '' }}>Bengali only (বাংলা)</option>
+                            <option value="banglish" {{ ($settings['gemini_default_review_lang'] ?? 'mixed') == 'banglish' ? 'selected' : '' }}>Banglish only (English script)</option>
+                            <option value="english" {{ ($settings['gemini_default_review_lang'] ?? 'mixed') == 'english' ? 'selected' : '' }}>English only</option>
+                        </select>
+                        <small style="color: var(--text-muted); display:block; margin-top: 4px;">Default language used when generating product reviews.</small>
+                    </div>
+
+                    {{-- Default Rating Style --}}
+                    <div class="form-group">
+                        <label for="gemini_default_rating_style" style="display:block; margin-bottom: 8px; font-weight: 600;">Default Rating Style</label>
+                        <select name="gemini_default_rating_style" id="gemini_default_rating_style" class="form-control" style="width: 100%; padding: 12px 14px; background: var(--bg-tertiary); border: 1px solid var(--border-color); color: white; border-radius: 8px;">
+                            <option value="mostly_5" {{ ($settings['gemini_default_rating_style'] ?? 'mostly_5') == 'mostly_5' ? 'selected' : '' }}>⭐⭐⭐⭐⭐ Mostly 5 Stars (Realistic 4-5 stars)</option>
+                            <option value="all_5" {{ ($settings['gemini_default_rating_style'] ?? 'mostly_5') == 'all_5' ? 'selected' : '' }}>⭐⭐⭐⭐⭐ 5 Stars Only (Pristine)</option>
+                            <option value="mixed" {{ ($settings['gemini_default_rating_style'] ?? 'mostly_5') == 'mixed' ? 'selected' : '' }}>⭐⭐⭐ to ⭐⭐⭐⭐⭐ Balanced (3 to 5 stars)</option>
+                        </select>
+                        <small style="color: var(--text-muted); display:block; margin-top: 4px;">Rating distribution when generating batches of reviews.</small>
+                    </div>
+
+                    {{-- Test Connection Box --}}
+                    <div style="grid-column: span 2; background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); border-radius: 10px; padding: 20px; margin-top: 8px;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+                            <div>
+                                <h4 style="margin: 0 0 4px; color: var(--text-primary); font-size: 1rem;">⚡ Test Gemini API Connection</h4>
+                                <p style="margin: 0; color: var(--text-muted); font-size: 0.85rem;">Send a test ping to Google Gemini to verify your API Key and Model before saving.</p>
+                            </div>
+                            <button type="button" id="btnTestGemini" onclick="testGeminiConnection()" style="padding: 10px 20px; background: linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: opacity 0.2s;">
+                                <span id="testBtnSpinner" style="display: none;">⏳</span>
+                                <span id="testBtnText">⚡ Test Connection</span>
+                            </button>
+                        </div>
+                        <div id="testResultBox" style="display: none; margin-top: 14px; padding: 12px 16px; border-radius: 8px; font-size: 0.88rem;"></div>
+                    </div>
+                </div>
+
+                <script>
+                    function toggleApiKeyVisibility() {
+                        const input = document.getElementById('gemini_api_key');
+                        const btnText = document.getElementById('toggleKeyText');
+                        if (input.type === 'password') {
+                            input.type = 'text';
+                            btnText.textContent = 'Hide';
+                        } else {
+                            input.type = 'password';
+                            btnText.textContent = 'Show';
+                        }
+                    }
+
+                    function selectModel(modelName) {
+                        document.getElementById('gemini_model').value = modelName;
+                    }
+
+                    function testGeminiConnection() {
+                        const apiKey = document.getElementById('gemini_api_key').value.trim();
+                        const model = document.getElementById('gemini_model').value.trim();
+                        const resultBox = document.getElementById('testResultBox');
+                        const btn = document.getElementById('btnTestGemini');
+                        const spinner = document.getElementById('testBtnSpinner');
+                        const btnText = document.getElementById('testBtnText');
+
+                        if (!apiKey) {
+                            resultBox.style.display = 'block';
+                            resultBox.style.background = 'rgba(239, 68, 68, 0.15)';
+                            resultBox.style.border = '1px solid rgba(239, 68, 68, 0.3)';
+                            resultBox.style.color = '#fca5a5';
+                            resultBox.innerHTML = '❌ Please enter an API key to test.';
+                            return;
+                        }
+
+                        btn.disabled = true;
+                        btn.style.opacity = '0.7';
+                        spinner.style.display = 'inline';
+                        btnText.textContent = 'Testing...';
+                        resultBox.style.display = 'none';
+
+                        fetch('{{ route("admin.settings.test-gemini") }}', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                'Accept': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                gemini_api_key: apiKey,
+                                gemini_model: model
+                            })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            resultBox.style.display = 'block';
+                            if (data.success) {
+                                resultBox.style.background = 'rgba(16, 185, 129, 0.15)';
+                                resultBox.style.border = '1px solid rgba(16, 185, 129, 0.4)';
+                                resultBox.style.color = '#6ee7b7';
+                                resultBox.innerHTML = '✅ <strong>Connection Successful!</strong><br><span style="font-size:0.82rem; color:#a7f3d0;">' + data.message + '</span>';
+                            } else {
+                                resultBox.style.background = 'rgba(239, 68, 68, 0.15)';
+                                resultBox.style.border = '1px solid rgba(239, 68, 68, 0.4)';
+                                resultBox.style.color = '#fca5a5';
+                                resultBox.innerHTML = '❌ <strong>Connection Failed:</strong><br><span style="font-size:0.82rem;">' + (data.message || 'Unknown error occurred.') + '</span>';
+                            }
+                        })
+                        .catch(err => {
+                            resultBox.style.display = 'block';
+                            resultBox.style.background = 'rgba(239, 68, 68, 0.15)';
+                            resultBox.style.border = '1px solid rgba(239, 68, 68, 0.4)';
+                            resultBox.style.color = '#fca5a5';
+                            resultBox.innerHTML = '❌ <strong>Request Error:</strong> ' + err.message;
+                        })
+                        .finally(() => {
+                            btn.disabled = false;
+                            btn.style.opacity = '1';
+                            spinner.style.display = 'none';
+                            btnText.textContent = '⚡ Test Connection';
+                        });
+                    }
+                </script>
             </div>
             @endif
 

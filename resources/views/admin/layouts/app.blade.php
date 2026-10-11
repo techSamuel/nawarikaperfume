@@ -87,6 +87,9 @@
                         <a href="{{ route('admin.settings.index', ['tab' => 'tracking']) }}" class="sidebar-link {{ request('tab') == 'tracking' && request()->routeIs('admin.settings.*') ? 'active' : '' }}" style="padding-left: 20px;">
                             <span class="icon">📈</span> Tracking & API
                         </a>
+                        <a href="{{ route('admin.settings.index', ['tab' => 'ai']) }}" class="sidebar-link {{ request('tab') == 'ai' && request()->routeIs('admin.settings.*') ? 'active' : '' }}" style="padding-left: 20px;">
+                            <span class="icon">🤖</span> AI Settings (Gemini)
+                        </a>
                         <a href="{{ route('admin.settings.index', ['tab' => 'policies']) }}" class="sidebar-link {{ request('tab') == 'policies' && request()->routeIs('admin.settings.*') ? 'active' : '' }}" style="padding-left: 20px;">
                             <span class="icon">📜</span> Policy Pages
                         </a>

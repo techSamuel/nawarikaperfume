@@ -514,3 +514,22 @@
         flex-direction: column;
     }
 }
+
+/* ── AI Review Generator Styles ── */
+.btn-model-chip {
+    transition: all 0.2s ease;
+}
+.btn-model-chip:hover {
+    transform: translateY(-1px);
+    border-color: var(--accent-primary) !important;
+    background: rgba(124, 58, 237, 0.25) !important;
+    color: #fff !important;
+}
+
+.ai-preview-item {
+    transition: border-color 0.2s ease;
+}
+.ai-preview-item:hover {
+    border-color: rgba(124, 58, 237, 0.5) !important;
+}
+

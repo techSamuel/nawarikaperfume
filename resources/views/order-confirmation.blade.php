@@ -86,7 +86,7 @@
             fbq('track', 'Purchase', {
                 value: {{ $order->total }},
                 currency: 'BDT',
-                content_ids: {!! json_encode($order->items->pluck('product_id')->toArray()) !!},
+                content_ids: {!! json_encode($order->items->pluck('product_id')->map(fn($id) => (string) $id)->values()->toArray()) !!},
                 content_type: 'product',
                 order_id: '{{ $order->order_number }}'
             });
@@ -95,7 +95,7 @@
             fbq('trackCustom', 'OrderSubmitted', {
                 value: {{ $order->total }},
                 currency: 'BDT',
-                content_ids: {!! json_encode($order->items->pluck('product_id')->toArray()) !!},
+                content_ids: {!! json_encode($order->items->pluck('product_id')->map(fn($id) => (string) $id)->values()->toArray()) !!},
                 content_type: 'product',
                 order_id: '{{ $order->order_number }}'
             });

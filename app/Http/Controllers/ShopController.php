@@ -128,4 +128,48 @@ class ShopController extends Controller
 
         return response()->json(['success' => false], 404);
     }
+
+    public function facebookCatalogFeed()
+    {
+        $products = Product::active()->with('category')->get();
+        $settings = \Illuminate\Support\Facades\Cache::remember('site_settings', 60*24, function () {
+            return \App\Models\Setting::pluck('value', 'key')->toArray();
+        });
+        $siteName = $settings['site_name'] ?? 'LUXE Perfumes';
+        $siteUrl = config('app.url');
+
+        $xml = new \SimpleXMLElement('<?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:g="http://base.google.com/ns/1.0"></rss>');
+        $channel = $xml->addChild('channel');
+        $channel->addChild('title', htmlspecialchars($siteName));
+        $channel->addChild('link', htmlspecialchars($siteUrl));
+        $channel->addChild('description', htmlspecialchars($siteName . ' Product Catalog Feed for Meta Commerce Manager'));
+
+        foreach ($products as $product) {
+            $item = $channel->addChild('item');
+            $item->addChild('g:id', (string) $product->id, 'http://base.google.com/ns/1.0');
+            $item->addChild('g:title', htmlspecialchars($product->name), 'http://base.google.com/ns/1.0');
+            $desc = strip_tags($product->description ?? $product->name);
+            $item->addChild('g:description', htmlspecialchars(substr($desc, 0, 5000)), 'http://base.google.com/ns/1.0');
+            $item->addChild('g:link', htmlspecialchars(route('product.show', $product->slug)), 'http://base.google.com/ns/1.0');
+            
+            $imgUrl = $product->image ? asset('uploads/' . $product->image) : asset('images/placeholder.jpg');
+            $item->addChild('g:image_link', htmlspecialchars($imgUrl), 'http://base.google.com/ns/1.0');
+            $item->addChild('g:brand', htmlspecialchars($siteName), 'http://base.google.com/ns/1.0');
+            $item->addChild('g:condition', 'new', 'http://base.google.com/ns/1.0');
+            $item->addChild('g:availability', $product->isInStock() ? 'in stock' : 'out of stock', 'http://base.google.com/ns/1.0');
+            $item->addChild('g:price', number_format((float)$product->price, 2, '.', '') . ' BDT', 'http://base.google.com/ns/1.0');
+
+            if ($product->isOnSale()) {
+                $item->addChild('g:sale_price', number_format((float)$product->sale_price, 2, '.', '') . ' BDT', 'http://base.google.com/ns/1.0');
+            }
+
+            if ($product->category) {
+                $item->addChild('g:product_type', htmlspecialchars($product->category->name), 'http://base.google.com/ns/1.0');
+            }
+        }
+
+        return response($xml->asXML(), 200, [
+            'Content-Type' => 'application/xml; charset=utf-8'
+        ]);
+    }
 }

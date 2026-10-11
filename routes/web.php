@@ -38,6 +38,7 @@ Route::get('/return-policy', [HomeController::class, 'returnPolicy'])->name('ret
 Route::get('/privacy-policy', [HomeController::class, 'privacyPolicy'])->name('privacy.policy');
 Route::get('/api/products/search', [ShopController::class, 'liveSearch'])->name('api.products.search');
 Route::post('/api/visitor/ping', [ShopController::class, 'pingVisitorLog'])->name('api.visitor.ping');
+Route::get('/facebook-catalog.xml', [ShopController::class, 'facebookCatalogFeed'])->name('facebook.catalog.feed');
 
 // Secret Artisan Routes
 Route::get('/run-migrations', function () {

@@ -195,6 +195,13 @@
                     <a href="javascript:void(0)" onclick="openGlobalSearch()" class="nav-icon-link" title="Search">
                         <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2" fill="none"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                     </a>
+                    <a href="{{ route('wishlist.index') }}" class="nav-icon-link" title="Wishlist">
+                        <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2" fill="none"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                        @php
+                            $wishlistCount = \App\Models\Wishlist::where(auth()->check() ? ['user_id' => auth()->id()] : ['session_id' => session()->getId()])->count();
+                        @endphp
+                        <span class="cart-badge" id="navWishlistBadge" style="{{ $wishlistCount > 0 ? 'display:inline-flex;' : 'display:none;' }}">{{ $wishlistCount }}</span>
+                    </a>
                     <a href="javascript:void(0)" onclick="openCheckoutSidebar()" class="nav-icon-link" title="View Cart">
                         <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
                         @php
@@ -294,6 +301,7 @@
                             <li><a href="{{ route('account.orders') }}">My Orders</a></li>
                             <li><a href="{{ route('profile.edit') }}">Profile</a></li>
                         @endguest
+                        <li><a href="{{ route('wishlist.index') }}">My Wishlist</a></li>
                         <li><a href="{{ route('cart.index') }}">Cart</a></li>
                     </ul>
                 </div>
@@ -308,6 +316,19 @@
                     </ul>
                 </div>
             </div>
+
+            <div class="footer-newsletter-banner" style="margin-top: 36px; padding: 24px; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: var(--radius-md); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 20px;">
+                <div style="max-width: 440px;">
+                    <h4 style="font-size: 1.15rem; font-weight: 600; color: var(--text-primary); margin-bottom: 6px;">Subscribe to Our Newsletter</h4>
+                    <p style="font-size: 0.875rem; color: var(--text-secondary); margin: 0;">Get exclusive updates, new product arrivals, and discount deals directly to your inbox.</p>
+                </div>
+                <form id="footerSubscribeForm" onsubmit="handleNewsletterSubscribe(event)" style="display: flex; gap: 10px; flex: 1; max-width: 460px; width: 100%;">
+                    @csrf
+                    <input type="email" id="subscribeEmailInput" name="email" required placeholder="Enter your email address..." style="flex: 1; padding: 10px 14px; border: 1px solid var(--border-color); border-radius: var(--radius-sm); background: var(--bg-card); color: var(--text-primary); font-size: 0.9rem;">
+                    <button type="submit" id="subscribeSubmitBtn" class="btn btn-primary" style="padding: 10px 20px; font-weight: 600; white-space: nowrap; border-radius: var(--radius-sm);">Subscribe</button>
+                </form>
+            </div>
+
             <div class="footer-bottom">
                 <p>&copy; {{ date('Y') }} {{ $settings['site_name'] ?? 'LUXE' }} Store. All rights reserved. | Cash on Delivery Only</p>
             </div>
@@ -920,6 +941,137 @@
                         resultsBox.innerHTML = '<div style="text-align: center; padding: 16px; color: #ef4444;">Failed to load search results.</div>';
                     });
             }, 250);
+        }
+
+        // Toast notifications
+        function showToast(message, type = 'success') {
+            let container = document.getElementById('toast-container');
+            if (!container) {
+                container = document.createElement('div');
+                container.id = 'toast-container';
+                container.style.cssText = 'position: fixed; bottom: 85px; right: 24px; z-index: 100000; display: flex; flex-direction: column; gap: 10px; pointer-events: none;';
+                document.body.appendChild(container);
+            }
+            const toast = document.createElement('div');
+            const bg = type === 'error' ? '#ef4444' : (type === 'info' ? '#3b82f6' : '#10b981');
+            toast.style.cssText = `background: ${bg}; color: #fff; padding: 12px 20px; border-radius: 8px; font-weight: 500; font-size: 0.9rem; box-shadow: 0 4px 14px rgba(0,0,0,0.25); pointer-events: auto;`;
+            toast.innerText = message;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(10px)';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // Newsletter subscription handler (triggers Meta CAPI Subscribe)
+        function handleNewsletterSubscribe(e) {
+            e.preventDefault();
+            const input = document.getElementById('subscribeEmailInput');
+            const btn = document.getElementById('subscribeSubmitBtn');
+            const email = input.value.trim();
+            if (!email) return;
+
+            btn.disabled = true;
+            btn.innerText = 'Subscribing...';
+
+            fetch('{{ route("subscribe") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({ email: email })
+            })
+            .then(r => r.json())
+            .then(data => {
+                btn.disabled = false;
+                btn.innerText = 'Subscribe';
+                if (data.success) {
+                    input.value = '';
+                    if (typeof fbq === 'function') {
+                        fbq('track', 'Subscribe', {
+                            currency: 'BDT',
+                            value: 0
+                        });
+                    }
+                    showToast(data.message || 'Subscribed successfully!', 'success');
+                } else {
+                    showToast(data.message || 'Could not subscribe.', 'error');
+                }
+            })
+            .catch(() => {
+                btn.disabled = false;
+                btn.innerText = 'Subscribe';
+                showToast('Something went wrong. Please try again.', 'error');
+            });
+        }
+
+        // Global Wishlist toggle handler (triggers Meta CAPI AddToWishlist)
+        function toggleWishlist(productId, btnElement) {
+            if (!productId) return;
+
+            if (btnElement) {
+                btnElement.disabled = true;
+                btnElement.style.opacity = '0.7';
+            }
+
+            fetch(`/wishlist/toggle/${productId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json'
+                }
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (btnElement) {
+                    btnElement.disabled = false;
+                    btnElement.style.opacity = '1';
+                }
+                if (data.success) {
+                    const badge = document.getElementById('navWishlistBadge');
+                    if (badge) {
+                        badge.textContent = data.count;
+                        badge.style.display = data.count > 0 ? 'inline-flex' : 'none';
+                    }
+
+                    if (btnElement) {
+                        const svg = btnElement.querySelector('svg');
+                        if (data.added) {
+                            btnElement.classList.add('in-wishlist');
+                            if (svg) svg.setAttribute('fill', 'currentColor');
+                        } else {
+                            btnElement.classList.remove('in-wishlist');
+                            if (svg) svg.setAttribute('fill', 'none');
+                        }
+                    }
+
+                    // Trigger Meta Pixel AddToWishlist event
+                    if (data.added && typeof fbq === 'function') {
+                        fbq('track', 'AddToWishlist', {
+                            content_name: data.product.name,
+                            content_ids: [data.product.id],
+                            content_type: 'product',
+                            value: data.product.price,
+                            currency: 'BDT'
+                        });
+                    }
+
+                    showToast(data.message, data.added ? 'success' : 'info');
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                if (btnElement) {
+                    btnElement.disabled = false;
+                    btnElement.style.opacity = '1';
+                }
+                showToast('Failed to update wishlist.', 'error');
+            });
         }
     </script>
 

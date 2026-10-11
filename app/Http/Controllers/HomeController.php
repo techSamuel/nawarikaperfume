@@ -115,6 +115,14 @@ class HomeController extends Controller
 
         \App\Models\ContactMessage::create($validated);
 
+        \App\Jobs\SendFacebookCapiEvent::send('Contact', [
+            'content_name' => $validated['subject'],
+        ], [
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'phone' => $validated['phone'] ?? null,
+        ]);
+
         return redirect()->back()->with('success', 'Your message has been sent successfully. We will get back to you soon.');
     }
 
@@ -136,5 +144,34 @@ class HomeController extends Controller
     public function privacyPolicy()
     {
         return view('pages.privacy_policy');
+    }
+
+    public function subscribe(Request $request)
+    {
+        $validated = $request->validate([
+            'email' => 'required|email|max:255',
+        ]);
+
+        \App\Models\NewsletterSubscriber::firstOrCreate(
+            ['email' => strtolower(trim($validated['email']))],
+            ['ip_address' => $request->ip()]
+        );
+
+        // Dispatch Meta CAPI Subscribe event
+        \App\Jobs\SendFacebookCapiEvent::send('Subscribe', [
+            'content_name' => 'Newsletter Subscription',
+            'status' => 'success',
+        ], [
+            'email' => $validated['email'],
+        ]);
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Thank you for subscribing to our newsletter!',
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'Thank you for subscribing to our newsletter!');
     }
 }

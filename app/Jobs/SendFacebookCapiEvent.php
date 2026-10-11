@@ -50,7 +50,7 @@ class SendFacebookCapiEvent implements ShouldQueue
         if (!empty($userData)) {
             $this->clientIp = $userData['ip_address'] ?? (request() ? request()->ip() : null);
             $this->userAgent = $userData['user_agent'] ?? (request() ? request()->userAgent() : null);
-            $this->eventSourceUrl = $userData['event_source_url'] ?? config('app.url');
+            $this->eventSourceUrl = $userData['event_source_url'] ?? (request() ? request()->url() : config('app.url'));
 
             if (!empty($userData['email'])) {
                 $this->userEmailHash = hash('sha256', strtolower(trim($userData['email'])));
@@ -69,8 +69,8 @@ class SendFacebookCapiEvent implements ShouldQueue
             if (!empty($userData['city'])) {
                 $this->cityHash = hash('sha256', strtolower(str_replace(' ', '', trim($userData['city']))));
             }
-            $this->fbp = $userData['fbp'] ?? null;
-            $this->fbc = $userData['fbc'] ?? null;
+            $this->fbp = $userData['fbp'] ?? (request() ? request()->cookie('_fbp') : null);
+            $this->fbc = $userData['fbc'] ?? (request() ? request()->cookie('_fbc') : null);
         } else {
             // Live web visitor request fallback
             $this->eventSourceUrl = request() ? request()->url() : config('app.url');
@@ -89,9 +89,25 @@ class SendFacebookCapiEvent implements ShouldQueue
                     }
                     $this->userPhoneHash = hash('sha256', $rawPhone);
                 }
+                if ($user->name) {
+                    $parts = explode(' ', trim($user->name), 2);
+                    $this->userNameHash = hash('sha256', strtolower($parts[0]));
+                }
             }
             $this->fbp = request() ? request()->cookie('_fbp') : null;
             $this->fbc = request() ? request()->cookie('_fbc') : null;
+        }
+    }
+
+    /**
+     * Send event synchronously with exception safety.
+     */
+    public static function send(string $eventName, array $customData = [], array $userData = [], ?string $eventId = null, ?int $eventTime = null)
+    {
+        try {
+            return self::dispatchSync($eventName, $customData, $userData, $eventId, $eventTime);
+        } catch (\Throwable $e) {
+            Log::error('SendFacebookCapiEvent error: ' . $e->getMessage());
         }
     }
 
@@ -169,7 +185,7 @@ class SendFacebookCapiEvent implements ShouldQueue
                 $postPayload['test_event_code'] = trim($settings['capi_test_code']);
             }
 
-            $response = Http::post("https://graph.facebook.com/v19.0/{$pixelId}/events", $postPayload);
+            $response = Http::timeout(5)->post("https://graph.facebook.com/v19.0/{$pixelId}/events", $postPayload);
 
             if ($response->failed()) {
                 Log::error('Facebook CAPI Error', [

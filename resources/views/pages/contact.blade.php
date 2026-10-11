@@ -76,3 +76,13 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+@if(session('success'))
+<script>
+    if (typeof fbq === 'function') {
+        fbq('track', 'Contact');
+    }
+</script>
+@endif
+@endpush

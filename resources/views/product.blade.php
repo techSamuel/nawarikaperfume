@@ -187,8 +187,8 @@
                             </span>
                         </div>
 
-                        <div class="cyber-cta-buttons">
-                            <button type="submit" class="btn-cyber-primary">
+                        <div class="cyber-cta-buttons" style="display: flex; gap: 12px; align-items: stretch;">
+                            <button type="submit" class="btn-cyber-primary" style="flex: 1;">
                                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                                     <circle cx="9" cy="21" r="1"></circle>
                                     <circle cx="20" cy="21" r="1"></circle>
@@ -196,12 +196,28 @@
                                 </svg>
                                 <span>Add to Cart</span>
                             </button>
+                            @php
+                                $isInWishlist = \App\Models\Wishlist::where('product_id', $product->id)
+                                    ->where(auth()->check() ? ['user_id' => auth()->id()] : ['session_id' => session()->getId()])
+                                    ->exists();
+                            @endphp
+                            <button type="button" class="btn-cyber-wishlist {{ $isInWishlist ? 'in-wishlist' : '' }}" onclick="toggleWishlist({{ $product->id }}, this)" title="{{ $isInWishlist ? 'Remove from Wishlist' : 'Add to Wishlist' }}" style="padding: 0 16px; border: 1px solid var(--border-color); background: var(--bg-card); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; color: {{ $isInWishlist ? '#ef4444' : 'var(--text-primary)' }}; cursor: pointer; transition: all 0.2s ease; min-width: 56px;">
+                                <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="{{ $isInWishlist ? 'currentColor' : 'none' }}"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                            </button>
                         </div>
                     </form>
                 @else
-                    <div style="margin-bottom: 24px;">
-                        <button type="button" class="btn btn-outline btn-lg btn-block" disabled style="opacity: 0.6; cursor: not-allowed;">
+                    <div style="margin-bottom: 24px; display: flex; gap: 12px;">
+                        <button type="button" class="btn btn-outline btn-lg" disabled style="flex: 1; opacity: 0.6; cursor: not-allowed;">
                             Currently Out of Stock
+                        </button>
+                        @php
+                            $isInWishlist = \App\Models\Wishlist::where('product_id', $product->id)
+                                ->where(auth()->check() ? ['user_id' => auth()->id()] : ['session_id' => session()->getId()])
+                                ->exists();
+                        @endphp
+                        <button type="button" class="btn-cyber-wishlist {{ $isInWishlist ? 'in-wishlist' : '' }}" onclick="toggleWishlist({{ $product->id }}, this)" title="Add to Wishlist" style="padding: 0 16px; border: 1px solid var(--border-color); background: var(--bg-card); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; color: {{ $isInWishlist ? '#ef4444' : 'var(--text-primary)' }}; cursor: pointer; transition: all 0.2s ease; min-width: 56px;">
+                            <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="{{ $isInWishlist ? 'currentColor' : 'none' }}"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
                         </button>
                     </div>
                 @endif

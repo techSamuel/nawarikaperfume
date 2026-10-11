@@ -40,10 +40,10 @@ class CheckoutController extends Controller
         $total = $subtotal + $shipping;
         $user = auth()->user();
 
-        \App\Jobs\SendFacebookCapiEvent::dispatch('InitiateCheckout', [
-            'value' => $total,
+        \App\Jobs\SendFacebookCapiEvent::send('InitiateCheckout', [
+            'value' => (float) $total,
             'currency' => 'BDT',
-            'content_ids' => array_keys($cart),
+            'content_ids' => array_map('strval', array_keys($cart)),
             'content_type' => 'product',
             'num_items' => count($cart)
         ]);
@@ -78,10 +78,10 @@ class CheckoutController extends Controller
         $total = $subtotal + $shipping;
 
         if (count($cart) > 0) {
-            \App\Jobs\SendFacebookCapiEvent::dispatch('InitiateCheckout', [
-                'value' => $total,
+            \App\Jobs\SendFacebookCapiEvent::send('InitiateCheckout', [
+                'value' => (float) $total,
                 'currency' => 'BDT',
-                'content_ids' => array_keys($cart),
+                'content_ids' => array_map('strval', array_keys($cart)),
                 'content_type' => 'product',
                 'num_items' => count($cart)
             ]);

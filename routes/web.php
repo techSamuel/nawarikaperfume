@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\ProductReviewController;
 use App\Http\Controllers\Admin\VisitorLogController;
+use App\Http\Controllers\WishlistController;
 use Illuminate\Support\Facades\Route;
 
 // Public Routes
@@ -23,6 +24,14 @@ Route::get('/track-order', [HomeController::class, 'trackOrder'])->name('order.t
 Route::get('/language/{locale}', [HomeController::class, 'switchLanguage'])->name('language.switch');
 Route::get('/contact', [HomeController::class, 'contact'])->name('contact');
 Route::post('/contact', [HomeController::class, 'submitContact'])->name('contact.submit');
+Route::post('/subscribe', [HomeController::class, 'subscribe'])->name('subscribe');
+
+// Wishlist Routes
+Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist.index');
+Route::post('/wishlist/toggle/{product}', [WishlistController::class, 'toggle'])->name('wishlist.toggle');
+Route::delete('/wishlist/remove/{product}', [WishlistController::class, 'remove'])->name('wishlist.remove');
+Route::get('/wishlist/count', [WishlistController::class, 'count'])->name('wishlist.count');
+
 Route::get('/faq', [HomeController::class, 'faq'])->name('faq');
 Route::get('/shipping-policy', [HomeController::class, 'shippingPolicy'])->name('shipping.policy');
 Route::get('/return-policy', [HomeController::class, 'returnPolicy'])->name('return.policy');

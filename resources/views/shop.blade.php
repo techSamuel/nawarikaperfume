@@ -97,14 +97,17 @@
                                         <span class="price-original" style="text-decoration: line-through; color: var(--text-muted); font-size: 0.9rem;">৳{{ number_format($product->price, 2) }}</span>
                                     @endif
                                 </div>
-                                <div class="product-card-actions" style="margin-top: auto;">
-                                    <form action="{{ route('cart.add', $product->id) }}" method="POST" style="width: 100%;">
+                                <div class="product-card-actions" style="margin-top: auto; display: flex; gap: 8px;">
+                                    <form action="{{ route('cart.add', $product->id) }}" method="POST" style="flex: 1;">
                                         @csrf
                                         <input type="hidden" name="quantity" value="1">
                                         <button type="submit" class="btn btn-primary btn-block" style="border-radius: 0; padding: 14px;" {{ !$product->isInStock() ? 'disabled' : '' }}>
                                             {{ $product->isInStock() ? __('messages.add_to_cart') : __('messages.out_of_stock') }}
                                         </button>
                                     </form>
+                                    <button type="button" onclick="toggleWishlist({{ $product->id }}, this)" class="btn btn-outline" style="padding: 14px 16px; border-radius: 0; display: flex; align-items: center; justify-content: center;" title="Wishlist">
+                                        <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                                    </button>
                                 </div>
                             </div>
                         </div>

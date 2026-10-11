@@ -266,11 +266,11 @@
                 <button type="button" class="cyber-tab-btn active" onclick="switchCyberTab('desc', this)">
                     Description
                 </button>
-                <button type="button" class="cyber-tab-btn" onclick="switchCyberTab('specs', this)">
-                    Specifications
-                </button>
                 <button type="button" class="cyber-tab-btn" onclick="switchCyberTab('reviews', this)">
                     Reviews ({{ $product->reviews ? $product->reviews->count() : 0 }})
+                </button>
+                <button type="button" class="cyber-tab-btn" onclick="switchCyberTab('specs', this)">
+                    Specifications
                 </button>
             </div>
 
@@ -287,39 +287,7 @@
                 @endif
             </div>
 
-            {{-- TAB 2: SPECIFICATIONS --}}
-            <div class="cyber-tab-content" id="tab-specs">
-                <div class="cyber-spec-matrix">
-                    <div class="cyber-spec-card">
-                        <span class="cyber-spec-label">Product Name</span>
-                        <span class="cyber-spec-val">{{ $product->name }}</span>
-                    </div>
-                    <div class="cyber-spec-card">
-                        <span class="cyber-spec-label">Category</span>
-                        <span class="cyber-spec-val">{{ $product->category->name ?? 'General' }}</span>
-                    </div>
-                    <div class="cyber-spec-card">
-                        <span class="cyber-spec-label">Stock Status</span>
-                        <span class="cyber-spec-val" style="color: {{ $product->isInStock() ? 'var(--success)' : 'var(--danger)' }};">
-                            {{ $product->isInStock() ? 'In Stock (' . $product->stock . ' Units)' : 'Out of Stock' }}
-                        </span>
-                    </div>
-                    <div class="cyber-spec-card">
-                        <span class="cyber-spec-label">Payment Options</span>
-                        <span class="cyber-spec-val" style="color: var(--success);">Cash on Delivery</span>
-                    </div>
-                    <div class="cyber-spec-card">
-                        <span class="cyber-spec-label">Shipping Warranty</span>
-                        <span class="cyber-spec-val">Free shipping on orders over ৳500</span>
-                    </div>
-                    <div class="cyber-spec-card">
-                        <span class="cyber-spec-label">Product ID</span>
-                        <span class="cyber-spec-val">{{ $settings['product_id_prefix'] ?? 'NAWARIKA' }}-{{ str_pad($product->id, 5, '0', STR_PAD_LEFT) }}</span>
-                    </div>
-                </div>
-            </div>
-
-            {{-- TAB 3: REVIEWS --}}
+            {{-- TAB 2: REVIEWS --}}
             <div class="cyber-tab-content" id="tab-reviews">
                 @if($product->reviews && $product->reviews->count() > 0)
                     <div class="cyber-reviews-grid">
@@ -352,6 +320,38 @@
                         <p style="color: var(--text-muted);">Be the first to share feedback on this item!</p>
                     </div>
                 @endif
+            </div>
+
+            {{-- TAB 3: SPECIFICATIONS --}}
+            <div class="cyber-tab-content" id="tab-specs">
+                <div class="cyber-spec-matrix">
+                    <div class="cyber-spec-card">
+                        <span class="cyber-spec-label">Product Name</span>
+                        <span class="cyber-spec-val">{{ $product->name }}</span>
+                    </div>
+                    <div class="cyber-spec-card">
+                        <span class="cyber-spec-label">Category</span>
+                        <span class="cyber-spec-val">{{ $product->category->name ?? 'General' }}</span>
+                    </div>
+                    <div class="cyber-spec-card">
+                        <span class="cyber-spec-label">Stock Status</span>
+                        <span class="cyber-spec-val" style="color: {{ $product->isInStock() ? 'var(--success)' : 'var(--danger)' }};">
+                            {{ $product->isInStock() ? 'In Stock (' . $product->stock . ' Units)' : 'Out of Stock' }}
+                        </span>
+                    </div>
+                    <div class="cyber-spec-card">
+                        <span class="cyber-spec-label">Payment Options</span>
+                        <span class="cyber-spec-val" style="color: var(--success);">Cash on Delivery</span>
+                    </div>
+                    <div class="cyber-spec-card">
+                        <span class="cyber-spec-label">Shipping Warranty</span>
+                        <span class="cyber-spec-val">Free shipping on orders over ৳500</span>
+                    </div>
+                    <div class="cyber-spec-card">
+                        <span class="cyber-spec-label">Product ID</span>
+                        <span class="cyber-spec-val">{{ $settings['product_id_prefix'] ?? 'NAWARIKA' }}-{{ str_pad($product->id, 5, '0', STR_PAD_LEFT) }}</span>
+                    </div>
+                </div>
             </div>
         </div>
 

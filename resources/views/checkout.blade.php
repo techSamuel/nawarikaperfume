@@ -7,9 +7,6 @@
 
     <form action="{{ route('checkout.store') }}" method="POST">
         @csrf
-        <div style="display:none; position:absolute; left:-9999px;" aria-hidden="true">
-            <input type="text" name="b_trap" value="" tabindex="-1" autocomplete="off">
-        </div>
         <div class="checkout-layout">
             {{-- SHIPPING FORM --}}
             <div>

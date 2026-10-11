@@ -92,32 +92,20 @@ class CheckoutController extends Controller
 
     public function store(Request $request)
     {
-        // Honeypot trap check for automated bots
-        if ($request->filled('b_trap')) {
-            return redirect()->route('home');
+        // Normalize phone number by stripping spaces, dashes, brackets, etc.
+        $rawPhone = preg_replace('/[^0-9]/', '', (string)$request->phone);
+        if (str_starts_with($rawPhone, '8801') && strlen($rawPhone) > 11) {
+            $rawPhone = substr($rawPhone, 2);
         }
+        $request->merge(['phone' => $rawPhone]);
 
         $request->validate([
             'name' => 'required|string|max:255',
-            'phone' => ['required', 'regex:/^(?:\+88|88)?(01[3-9]\d{8})$/'],
-            'address' => 'required|string|min:5|max:500',
-        ], [
-            'phone.regex' => 'Please enter a valid 11-digit Bangladeshi mobile number (e.g. 017XXXXXXXX).',
+            'phone' => 'required|string|min:10|max:15',
+            'address' => 'required|string|max:500',
         ]);
 
-        // Normalize phone number to clean 11 digits
-        $cleanedPhone = preg_replace('/[^0-9]/', '', $request->phone);
-        if (strlen($cleanedPhone) > 11 && str_starts_with($cleanedPhone, '8801')) {
-            $cleanedPhone = substr($cleanedPhone, 2);
-        }
-
-        // Duplicate submission prevention (within 60 seconds)
-        $recentOrder = Order::where('phone', $cleanedPhone)
-            ->where('created_at', '>=', now()->subMinute())
-            ->first();
-        if ($recentOrder) {
-            return redirect()->route('order.confirmation', $recentOrder->order_number);
-        }
+        $cleanedPhone = $rawPhone;
 
         $cart = session()->get('cart', []);
         if (empty($cart)) {
@@ -204,9 +192,14 @@ class CheckoutController extends Controller
             return redirect()->route('order.confirmation', $order->order_number)
                 ->with('success', 'Order placed successfully!');
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             DB::rollBack();
-            return back()->with('error', 'Something went wrong. Please try again.');
+            \Illuminate\Support\Facades\Log::error('Order checkout exception: ' . $e->getMessage(), [
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+            return back()->with('error', 'Something went wrong: ' . $e->getMessage());
         }
     }
 

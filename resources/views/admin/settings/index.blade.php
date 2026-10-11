@@ -383,6 +383,8 @@
                     </div>
                 </div>
             </div>
+            @endif
+
             @if($tab == 'ai')
             {{-- AI & GEMINI SETTINGS --}}
             <div style="grid-column: span 2;">

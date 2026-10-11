@@ -387,7 +387,110 @@
                         <input type="text" name="capi_test_code" id="capi_test_code" class="form-control" value="{{ $settings['capi_test_code'] ?? '' }}" placeholder="e.g., TEST12345" style="width: 100%; padding: 10px; background: var(--bg-tertiary); border: 1px solid var(--border-color); color: white; border-radius: 8px;">
                         <small style="color: var(--text-muted); display:block; margin-top: 4px;">Copy from Meta Events Manager &rarr; Test Events tab. Leave blank for live production events.</small>
                     </div>
+
+                    {{-- CAPI TEST CONNECTION BUTTON & RESULT --}}
+                    <div style="grid-column: span 2; padding: 16px; background: rgba(59, 130, 246, 0.08); border: 1px solid rgba(59, 130, 246, 0.25); border-radius: 10px;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+                            <div>
+                                <strong style="color: #93c5fd; font-size: 0.95rem;">⚡ Test Meta CAPI Real-time Connection</strong>
+                                <p style="margin: 4px 0 0; color: var(--text-muted); font-size: 0.82rem;">
+                                    Send an instant diagnostic test event to Meta Graph API to verify your Pixel ID and Access Token.
+                                </p>
+                            </div>
+                            <button type="button" id="btnTestCapi" onclick="testCapiConnection()" class="btn btn-outline" style="background: rgba(59, 130, 246, 0.15); border-color: rgba(59, 130, 246, 0.4); color: #60a5fa; font-weight: 600; padding: 8px 18px; border-radius: 6px; cursor: pointer;">
+                                <span id="capiSpinner" style="display:none;">⏳ </span><span id="capiBtnText">Test CAPI Now</span>
+                            </button>
+                        </div>
+                        <div id="capiResultBox" style="display:none; margin-top: 14px; padding: 12px 16px; border-radius: 8px; font-size: 0.85rem;"></div>
+                    </div>
+
+                    {{-- FACEBOOK PRODUCT CATALOG FEED BOX --}}
+                    <div style="grid-column: span 2; padding: 16px; background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 10px;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+                            <div>
+                                <strong style="color: #6ee7b7; font-size: 0.95rem;">📦 Live Facebook Product Catalog Feed (XML)</strong>
+                                <p style="margin: 4px 0 0; color: var(--text-muted); font-size: 0.82rem;">
+                                    Use this URL in Meta Commerce Manager &rarr; Catalog &rarr; Data Sources to sync your products automatically and fix catalog mismatch warnings.
+                                </p>
+                            </div>
+                            <button type="button" onclick="navigator.clipboard.writeText('{{ url('/facebook-catalog.xml') }}'); this.innerText='Copied!'; setTimeout(()=>this.innerText='Copy Feed URL', 2000)" class="btn btn-outline" style="background: rgba(16, 185, 129, 0.15); border-color: rgba(16, 185, 129, 0.4); color: #34d399; font-weight: 600; padding: 8px 18px; border-radius: 6px; cursor: pointer;">
+                                Copy Feed URL
+                            </button>
+                        </div>
+                        <div style="margin-top: 10px; background: rgba(0,0,0,0.3); padding: 8px 12px; border-radius: 6px; font-family: monospace; font-size: 0.85rem; color: #a7f3d0; word-break: break-all;">
+                            {{ url('/facebook-catalog.xml') }}
+                        </div>
+                    </div>
                 </div>
+
+                <script>
+                    function testCapiConnection() {
+                        const pixelId = document.getElementById('fb_pixel_id').value.trim();
+                        const token = document.getElementById('capi_token').value.trim();
+                        const testCode = document.getElementById('capi_test_code').value.trim();
+                        const resultBox = document.getElementById('capiResultBox');
+                        const btn = document.getElementById('btnTestCapi');
+                        const spinner = document.getElementById('capiSpinner');
+                        const btnText = document.getElementById('capiBtnText');
+
+                        if (!pixelId || !token) {
+                            resultBox.style.display = 'block';
+                            resultBox.style.background = 'rgba(239, 68, 68, 0.15)';
+                            resultBox.style.border = '1px solid rgba(239, 68, 68, 0.3)';
+                            resultBox.style.color = '#fca5a5';
+                            resultBox.innerHTML = '❌ Please enter both Facebook Pixel ID and CAPI Token first.';
+                            return;
+                        }
+
+                        btn.disabled = true;
+                        btn.style.opacity = '0.7';
+                        spinner.style.display = 'inline';
+                        btnText.textContent = 'Contacting Meta...';
+                        resultBox.style.display = 'none';
+
+                        fetch('{{ route("admin.settings.test-capi") }}', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                'Accept': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                fb_pixel_id: pixelId,
+                                capi_token: token,
+                                capi_test_code: testCode
+                            })
+                        })
+                        .then(r => r.json())
+                        .then(data => {
+                            resultBox.style.display = 'block';
+                            if (data.success) {
+                                resultBox.style.background = 'rgba(16, 185, 129, 0.15)';
+                                resultBox.style.border = '1px solid rgba(16, 185, 129, 0.4)';
+                                resultBox.style.color = '#6ee7b7';
+                                resultBox.innerHTML = '✅ <strong>CAPI is working perfectly!</strong><br><span style="font-size:0.82rem; color:#a7f3d0;">Meta received event successfully (Trace ID: ' + (data.fbtrace_id || 'N/A') + '). Check your Meta Events Manager Test Events tab!</span>';
+                            } else {
+                                resultBox.style.background = 'rgba(239, 68, 68, 0.15)';
+                                resultBox.style.border = '1px solid rgba(239, 68, 68, 0.4)';
+                                resultBox.style.color = '#fca5a5';
+                                resultBox.innerHTML = '❌ <strong>CAPI Test Failed:</strong><br><span style="font-size:0.82rem;">' + (data.message || 'Check your Pixel ID and Access Token.') + '</span>';
+                            }
+                        })
+                        .catch(err => {
+                            resultBox.style.display = 'block';
+                            resultBox.style.background = 'rgba(239, 68, 68, 0.15)';
+                            resultBox.style.border = '1px solid rgba(239, 68, 68, 0.4)';
+                            resultBox.style.color = '#fca5a5';
+                            resultBox.innerHTML = '❌ Network error when testing CAPI connection.';
+                        })
+                        .finally(() => {
+                            btn.disabled = false;
+                            btn.style.opacity = '1';
+                            spinner.style.display = 'none';
+                            btnText.textContent = 'Test CAPI Now';
+                        });
+                    }
+                </script>
             </div>
             @endif
 

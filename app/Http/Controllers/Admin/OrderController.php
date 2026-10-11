@@ -60,6 +60,44 @@ class OrderController extends Controller
                     $item->product->increment('stock', $item->quantity);
                 }
             }
+
+            // Dispatch Meta CAPI CancelOrder event
+            $order->load('items');
+            $contents = [];
+            foreach ($order->items as $item) {
+                $contents[] = [
+                    'id' => (string) $item->product_id,
+                    'quantity' => (int) $item->quantity,
+                    'item_price' => (float) $item->price,
+                ];
+            }
+
+            \App\Jobs\SendFacebookCapiEvent::send(
+                'CancelOrder',
+                [
+                    'value' => (float) $order->total,
+                    'currency' => 'BDT',
+                    'content_ids' => $order->items->pluck('product_id')->map(fn($id) => (string) $id)->values()->toArray(),
+                    'contents' => $contents,
+                    'content_type' => 'product',
+                    'num_items' => $order->items->sum('quantity'),
+                    'order_id' => $order->order_number,
+                    'status' => 'cancelled',
+                ],
+                [
+                    'phone' => $order->phone,
+                    'email' => $order->email,
+                    'name' => $order->name,
+                    'city' => $order->city,
+                    'ip_address' => $order->ip_address,
+                    'user_agent' => $order->user_agent,
+                    'fbp' => $order->fbp,
+                    'fbc' => $order->fbc,
+                    'event_source_url' => route('order.confirmation', $order->order_number),
+                ],
+                $order->order_number . '_cancel',
+                time()
+            );
         }
 
         if ($request->status === 'confirm' && $oldStatus !== 'confirm') {

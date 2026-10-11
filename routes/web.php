@@ -123,6 +123,7 @@ Route::middleware(['auth', \App\Http\Middleware\AdminMiddleware::class])
         Route::get('/settings', [\App\Http\Controllers\Admin\SettingController::class, 'index'])->name('settings.index');
         Route::post('/settings', [\App\Http\Controllers\Admin\SettingController::class, 'store'])->name('settings.store');
         Route::post('/settings/test-gemini', [\App\Http\Controllers\Admin\SettingController::class, 'testGemini'])->name('settings.test-gemini');
+        Route::post('/settings/test-capi', [\App\Http\Controllers\Admin\SettingController::class, 'testCapi'])->name('settings.test-capi');
 
         Route::get('/contact-messages', [\App\Http\Controllers\Admin\ContactMessageController::class, 'index'])->name('contact-messages.index');
         Route::get('/contact-messages/{contact_message}', [\App\Http\Controllers\Admin\ContactMessageController::class, 'show'])->name('contact-messages.show');

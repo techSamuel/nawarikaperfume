@@ -206,8 +206,8 @@
                     </div>
                 @endif
 
-                {{-- TRUST BADGES MATRIX --}}
-                <div class="cyber-trust-matrix">
+                {{-- TRUST BADGES MATRIX (DESKTOP) --}}
+                <div class="cyber-trust-matrix cyber-trust-matrix-desktop">
                     <div class="cyber-trust-card">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
@@ -324,6 +324,29 @@
                         <p style="color: var(--text-muted);">Be the first to share feedback on this item!</p>
                     </div>
                 @endif
+            </div>
+        </div>
+
+        {{-- TRUST BADGES MATRIX (MOBILE: Displayed Under Description / Tabs Station) --}}
+        <div class="cyber-trust-matrix cyber-trust-matrix-mobile">
+            <div class="cyber-trust-card">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+                    <line x1="1" y1="10" x2="23" y2="10"></line>
+                </svg>
+                <span>Cash on Delivery</span>
+            </div>
+            <div class="cyber-trust-card">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path>
+                </svg>
+                <span>Express Delivery</span>
+            </div>
+            <div class="cyber-trust-card">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                </svg>
+                <span>100% Authentic</span>
             </div>
         </div>
 

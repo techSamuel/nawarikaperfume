@@ -3449,6 +3449,10 @@ tbody tr:hover {
     border-top: 1px solid var(--border-color);
 }
 
+.cyber-trust-matrix-mobile {
+    display: none;
+}
+
 .cyber-trust-card {
     display: flex;
     flex-direction: column;
@@ -3668,6 +3672,22 @@ tbody tr:hover {
     .cyber-spec-matrix {
         grid-template-columns: 1fr;
     }
+
+    .cyber-trust-matrix-desktop {
+        display: none !important;
+    }
+
+    .cyber-trust-matrix-mobile {
+        display: grid !important;
+        margin-top: 28px;
+        margin-bottom: 24px;
+        padding-top: 0;
+        border-top: none;
+    }
+
+    .cyber-tabs-station {
+        margin-top: 28px;
+    }
 }
 
 @media (max-width: 768px) {
@@ -3681,6 +3701,10 @@ tbody tr:hover {
         border-radius: var(--radius-lg);
     }
 
+    .cyber-tabs-station {
+        margin-top: 20px;
+    }
+
     .cyber-product-title {
         font-size: 1.5rem;
     }
@@ -3690,7 +3714,13 @@ tbody tr:hover {
     }
 
     .cyber-trust-matrix {
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+
+    .cyber-trust-matrix-mobile {
+        margin-top: 20px;
+        margin-bottom: 24px;
     }
 
     .lightbox-prev {
@@ -3708,7 +3738,12 @@ tbody tr:hover {
     }
 
     .cyber-trust-matrix {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+    }
+
+    .cyber-trust-card {
+        padding: 12px 8px;
     }
 
     .cyber-thumb-item {

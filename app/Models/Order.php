@@ -11,13 +11,14 @@ class Order extends Model
         'address', 'city', 'state', 'zip', 'subtotal', 'shipping',
         'total', 'status', 'payment_method', 'notes',
         'ip_address', 'user_agent', 'device_type', 'browser',
-        'platform', 'timezone', 'country'
+        'platform', 'timezone', 'country', 'fbp', 'fbc', 'capi_purchase_sent_at'
     ];
 
     protected $casts = [
         'subtotal' => 'decimal:2',
         'shipping' => 'decimal:2',
         'total' => 'decimal:2',
+        'capi_purchase_sent_at' => 'datetime',
     ];
 
     public function user()

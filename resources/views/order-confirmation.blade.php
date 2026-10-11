@@ -82,13 +82,24 @@
 @push('scripts')
 <script>
     if (typeof fbq === 'function') {
-        fbq('track', 'Purchase', {
-            value: {{ $order->total }},
-            currency: 'BDT',
-            content_ids: {!! json_encode($order->items->pluck('product_id')->toArray()) !!},
-            content_type: 'product',
-            order_id: '{{ $order->order_number }}'
-        });
+        @if($order->status === 'confirm')
+            fbq('track', 'Purchase', {
+                value: {{ $order->total }},
+                currency: 'BDT',
+                content_ids: {!! json_encode($order->items->pluck('product_id')->toArray()) !!},
+                content_type: 'product',
+                order_id: '{{ $order->order_number }}'
+            });
+        @else
+            // Purchase is held pending manual admin confirmation to prevent fraud/fake order tracking
+            fbq('trackCustom', 'OrderSubmitted', {
+                value: {{ $order->total }},
+                currency: 'BDT',
+                content_ids: {!! json_encode($order->items->pluck('product_id')->toArray()) !!},
+                content_type: 'product',
+                order_id: '{{ $order->order_number }}'
+            });
+        @endif
     }
 </script>
 @endpush

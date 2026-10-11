@@ -92,11 +92,32 @@ class CheckoutController extends Controller
 
     public function store(Request $request)
     {
+        // Honeypot trap check for automated bots
+        if ($request->filled('b_trap')) {
+            return redirect()->route('home');
+        }
+
         $request->validate([
             'name' => 'required|string|max:255',
-            'phone' => 'required|string|max:20',
-            'address' => 'required|string|max:500',
+            'phone' => ['required', 'regex:/^(?:\+88|88)?(01[3-9]\d{8})$/'],
+            'address' => 'required|string|min:5|max:500',
+        ], [
+            'phone.regex' => 'Please enter a valid 11-digit Bangladeshi mobile number (e.g. 017XXXXXXXX).',
         ]);
+
+        // Normalize phone number to clean 11 digits
+        $cleanedPhone = preg_replace('/[^0-9]/', '', $request->phone);
+        if (strlen($cleanedPhone) > 11 && str_starts_with($cleanedPhone, '8801')) {
+            $cleanedPhone = substr($cleanedPhone, 2);
+        }
+
+        // Duplicate submission prevention (within 60 seconds)
+        $recentOrder = Order::where('phone', $cleanedPhone)
+            ->where('created_at', '>=', now()->subMinute())
+            ->first();
+        if ($recentOrder) {
+            return redirect()->route('order.confirmation', $recentOrder->order_number);
+        }
 
         $cart = session()->get('cart', []);
         if (empty($cart)) {
@@ -136,12 +157,22 @@ class CheckoutController extends Controller
             $userAgent = $request->header('User-Agent', '');
             $timezone = $request->header('X-Timezone') ?? $request->cookie('visitor_tz') ?? 'Asia/Dhaka';
 
+            // Capture Meta Pixel Browser ID (_fbp) and Click ID (_fbc)
+            $fbp = $request->cookie('_fbp');
+            $fbc = $request->cookie('_fbc');
+            if (!$fbc && (session('fbclid') || $request->query('fbclid'))) {
+                $fbclid = $request->query('fbclid') ?? session('fbclid');
+                $fbc = 'fb.1.' . (time() * 1000) . '.' . $fbclid;
+            }
+
+            $userEmail = auth()->user()?->email ?? $request->email ?? null;
+
             $order = Order::create([
                 'user_id' => auth()->id(),
                 'order_number' => Order::generateOrderNumber(),
                 'name' => $request->name,
-                'email' => null,
-                'phone' => $request->phone,
+                'email' => $userEmail,
+                'phone' => $cleanedPhone,
                 'address' => $request->address,
                 'city' => null,
                 'state' => null,
@@ -159,6 +190,8 @@ class CheckoutController extends Controller
                 'platform' => $this->detectPlatform($userAgent),
                 'timezone' => $timezone,
                 'country' => $this->detectCountry($request),
+                'fbp' => $fbp,
+                'fbc' => $fbc,
             ]);
 
             foreach ($orderItems as $item) {

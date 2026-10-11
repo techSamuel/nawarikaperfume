@@ -63,14 +63,46 @@ class OrderController extends Controller
         }
 
         if ($request->status === 'confirm' && $oldStatus !== 'confirm') {
-            $order->load('items');
-            \App\Jobs\SendFacebookCapiEvent::dispatch('Purchase', [
-                'value' => $order->total,
-                'currency' => 'BDT',
-                'content_ids' => $order->items->pluck('product_id')->toArray(),
-                'content_type' => 'product',
-                'order_id' => $order->order_number
-            ]);
+            if (!$order->capi_purchase_sent_at) {
+                $order->load('items');
+
+                $contents = [];
+                foreach ($order->items as $item) {
+                    $contents[] = [
+                        'id' => (string) $item->product_id,
+                        'quantity' => (int) $item->quantity,
+                        'item_price' => (float) $item->price,
+                    ];
+                }
+
+                \App\Jobs\SendFacebookCapiEvent::dispatch(
+                    'Purchase',
+                    [
+                        'value' => (float) $order->total,
+                        'currency' => 'BDT',
+                        'content_ids' => $order->items->pluck('product_id')->map(fn($id) => (string) $id)->values()->toArray(),
+                        'contents' => $contents,
+                        'content_type' => 'product',
+                        'num_items' => $order->items->sum('quantity'),
+                        'order_id' => $order->order_number,
+                    ],
+                    [
+                        'phone' => $order->phone,
+                        'email' => $order->email,
+                        'name' => $order->name,
+                        'city' => $order->city,
+                        'ip_address' => $order->ip_address,
+                        'user_agent' => $order->user_agent,
+                        'fbp' => $order->fbp,
+                        'fbc' => $order->fbc,
+                        'event_source_url' => route('order.confirmation', $order->order_number),
+                    ],
+                    $order->order_number,
+                    time()
+                );
+
+                $order->update(['capi_purchase_sent_at' => now()]);
+            }
         }
 
         return back()->with('success', 'Order status updated to ' . ucfirst($request->status) . '.');

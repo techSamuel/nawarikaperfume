@@ -14,6 +14,10 @@ class TrackVisitorLog
 
     public function handle(Request $request, Closure $next): Response
     {
+        if ($request->has('fbclid')) {
+            session(['fbclid' => $request->query('fbclid')]);
+        }
+
         $response = $next($request);
 
         // Skip static asset requests or internal API counts

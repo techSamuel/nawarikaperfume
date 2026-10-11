@@ -23,26 +23,75 @@ class SendFacebookCapiEvent implements ShouldQueue
     public $userAgent;
     public $userEmailHash;
     public $userPhoneHash;
+    public $userNameHash;
+    public $cityHash;
+    public $fbp;
+    public $fbc;
+    public $eventId;
+    public $eventTime;
 
     /**
      * Create a new job instance.
+     *
+     * @param string $eventName
+     * @param array $customData
+     * @param array $userData Optional customer-specific data (for delayed/offline events)
+     * @param string|null $eventId
+     * @param int|null $eventTime
      */
-    public function __construct(string $eventName, array $customData = [])
+    public function __construct(string $eventName, array $customData = [], array $userData = [], ?string $eventId = null, ?int $eventTime = null)
     {
         $this->eventName = $eventName;
         $this->customData = $customData;
-        $this->eventSourceUrl = request()->url();
-        $this->clientIp = request()->ip();
-        $this->userAgent = request()->userAgent();
+        $this->eventId = $eventId ?? ($customData['order_id'] ?? null);
+        $this->eventTime = $eventTime ?? time();
 
-        if (auth()->check()) {
-            $user = auth()->user();
-            if ($user->email) {
-                $this->userEmailHash = hash('sha256', strtolower(trim($user->email)));
+        // If explicit customer data is passed (e.g. from Order model upon Admin Confirm)
+        if (!empty($userData)) {
+            $this->clientIp = $userData['ip_address'] ?? (request() ? request()->ip() : null);
+            $this->userAgent = $userData['user_agent'] ?? (request() ? request()->userAgent() : null);
+            $this->eventSourceUrl = $userData['event_source_url'] ?? config('app.url');
+
+            if (!empty($userData['email'])) {
+                $this->userEmailHash = hash('sha256', strtolower(trim($userData['email'])));
             }
-            if ($user->phone) {
-                $this->userPhoneHash = hash('sha256', ltrim(preg_replace('/[^0-9]/', '', $user->phone), '0'));
+            if (!empty($userData['phone'])) {
+                $rawPhone = preg_replace('/[^0-9]/', '', $userData['phone']);
+                if (str_starts_with($rawPhone, '01') && strlen($rawPhone) === 11) {
+                    $rawPhone = '88' . $rawPhone;
+                }
+                $this->userPhoneHash = hash('sha256', $rawPhone);
             }
+            if (!empty($userData['name'])) {
+                $parts = explode(' ', trim($userData['name']), 2);
+                $this->userNameHash = hash('sha256', strtolower($parts[0]));
+            }
+            if (!empty($userData['city'])) {
+                $this->cityHash = hash('sha256', strtolower(str_replace(' ', '', trim($userData['city']))));
+            }
+            $this->fbp = $userData['fbp'] ?? null;
+            $this->fbc = $userData['fbc'] ?? null;
+        } else {
+            // Live web visitor request fallback
+            $this->eventSourceUrl = request() ? request()->url() : config('app.url');
+            $this->clientIp = request() ? request()->ip() : null;
+            $this->userAgent = request() ? request()->userAgent() : null;
+
+            if (auth()->check()) {
+                $user = auth()->user();
+                if ($user->email) {
+                    $this->userEmailHash = hash('sha256', strtolower(trim($user->email)));
+                }
+                if ($user->phone) {
+                    $rawPhone = preg_replace('/[^0-9]/', '', $user->phone);
+                    if (str_starts_with($rawPhone, '01') && strlen($rawPhone) === 11) {
+                        $rawPhone = '88' . $rawPhone;
+                    }
+                    $this->userPhoneHash = hash('sha256', $rawPhone);
+                }
+            }
+            $this->fbp = request() ? request()->cookie('_fbp') : null;
+            $this->fbc = request() ? request()->cookie('_fbc') : null;
         }
     }
 
@@ -63,21 +112,43 @@ class SendFacebookCapiEvent implements ShouldQueue
                 return;
             }
 
-            $eventData = [
-                'event_name' => $this->eventName,
-                'event_time' => time(),
-                'action_source' => 'website',
-                'user_data' => [
-                    'client_ip_address' => $this->clientIp,
-                    'client_user_agent' => $this->userAgent,
-                ]
-            ];
-
+            $userDataPayload = [];
+            if ($this->clientIp) {
+                $userDataPayload['client_ip_address'] = $this->clientIp;
+            }
+            if ($this->userAgent) {
+                $userDataPayload['client_user_agent'] = $this->userAgent;
+            }
             if ($this->userEmailHash) {
-                $eventData['user_data']['em'] = $this->userEmailHash;
+                $userDataPayload['em'] = [$this->userEmailHash];
             }
             if ($this->userPhoneHash) {
-                $eventData['user_data']['ph'] = $this->userPhoneHash;
+                $userDataPayload['ph'] = [$this->userPhoneHash];
+            }
+            if ($this->userNameHash) {
+                $userDataPayload['fn'] = [$this->userNameHash];
+            }
+            if ($this->cityHash) {
+                $userDataPayload['ct'] = [$this->cityHash];
+            }
+            $userDataPayload['country'] = [hash('sha256', 'bd')];
+
+            if ($this->fbp) {
+                $userDataPayload['fbp'] = $this->fbp;
+            }
+            if ($this->fbc) {
+                $userDataPayload['fbc'] = $this->fbc;
+            }
+
+            $eventData = [
+                'event_name' => $this->eventName,
+                'event_time' => $this->eventTime,
+                'action_source' => 'website',
+                'user_data' => $userDataPayload,
+            ];
+
+            if ($this->eventId) {
+                $eventData['event_id'] = $this->eventId;
             }
 
             if (!empty($this->customData)) {
@@ -96,7 +167,8 @@ class SendFacebookCapiEvent implements ShouldQueue
             if ($response->failed()) {
                 Log::error('Facebook CAPI Error', [
                     'response' => $response->json(),
-                    'event' => $this->eventName
+                    'event' => $this->eventName,
+                    'event_id' => $this->eventId
                 ]);
             }
         } catch (\Exception $e) {

@@ -77,7 +77,7 @@
 <div class="order-detail-grid" style="margin-top: 24px;">
     {{-- CUSTOMER TECHNICAL DETAILS --}}
     <div class="order-info-card" style="grid-column: 1 / -1;">
-        <h3>Customer Technical Details</h3>
+        <h3>Customer Technical Details & Meta Tracking</h3>
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
             <div class="order-info-row" style="margin-bottom:0;"><span>IP Address</span><span>{{ $order->ip_address ?? 'N/A' }}</span></div>
             <div class="order-info-row" style="margin-bottom:0;"><span>Country</span><span>{{ $order->country ?? 'N/A' }}</span></div>
@@ -85,6 +85,19 @@
             <div class="order-info-row" style="margin-bottom:0;"><span>Platform</span><span>{{ $order->platform ?? 'N/A' }}</span></div>
             <div class="order-info-row" style="margin-bottom:0;"><span>Browser</span><span>{{ $order->browser ?? 'N/A' }}</span></div>
             <div class="order-info-row" style="margin-bottom:0;"><span>Timezone</span><span>{{ $order->timezone ?? 'N/A' }}</span></div>
+            <div class="order-info-row" style="margin-bottom:0;">
+                <span>Meta CAPI Status</span>
+                <span>
+                    @if($order->capi_purchase_sent_at)
+                        <span class="badge badge-success" style="font-size:0.75rem;">✓ Sent ({{ $order->capi_purchase_sent_at->format('M d, h:i A') }})</span>
+                    @else
+                        <span class="badge badge-warning" style="font-size:0.75rem;">⏳ On Hold (Sends on Confirm)</span>
+                    @endif
+                </span>
+            </div>
+            @if($order->fbp)
+                <div class="order-info-row" style="margin-bottom:0;"><span>Meta FBP Cookie</span><span style="font-size:0.75rem; font-family:monospace;">{{ Str::limit($order->fbp, 22) }}</span></div>
+            @endif
         </div>
         @if($order->user_agent)
             <div style="margin-top:16px; padding-top:16px; border-top:1px solid var(--border-color);">

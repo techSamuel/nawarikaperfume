@@ -13,6 +13,9 @@
     @else
         <form action="{{ route('checkout.store') }}" method="POST" id="quickCheckoutForm" style="height: 100%; width: 100%;">
             @csrf
+            <div style="display:none; position:absolute; left:-9999px;" aria-hidden="true">
+                <input type="text" name="b_trap" value="" tabindex="-1" autocomplete="off">
+            </div>
             
             <div style="height: 100%; overflow-y: auto; padding-bottom: 100px; -webkit-overflow-scrolling: touch;">
             

@@ -16,13 +16,14 @@
     <meta name="keywords" content="@yield('meta_keywords', $metaKeywords)">
     
     <!-- Open Graph / Social Media Meta Tags -->
-    <meta property="og:type" content="website">
+    <meta property="og:type" content="@yield('og_type', 'website')">
     <meta property="og:url" content="{{ url()->current() }}">
     <meta property="og:title" content="@hasSection('title') @yield('title') | {{ $metaTitle }} @else {{ $metaTitle }} @endif">
     <meta property="og:description" content="@yield('meta_description', $metaDesc)">
     @if($socialImage)
     <meta property="og:image" content="@yield('meta_image', $socialImage)">
     @endif
+    @stack('meta')
     
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:url" content="{{ url()->current() }}">
@@ -558,8 +559,14 @@
                 .then(res => res.json())
                 .then(data => {
                     if(data.success) {
-                        if (typeof fbq === 'function') {
-                            fbq('track', 'AddToCart');
+                        if (typeof fbq === 'function' && data.product) {
+                            fbq('track', 'AddToCart', {
+                                content_name: data.product.name,
+                                content_ids: [String(data.product.id)],
+                                content_type: 'product',
+                                value: data.product.total,
+                                currency: 'BDT'
+                            });
                         }
                         openCheckoutSidebar();
                     } else {
@@ -607,9 +614,6 @@
             document.body.style.width = '100%';
             document.body.style.overflow = 'hidden';
 
-            if (typeof fbq === 'function') {
-                fbq('track', 'InitiateCheckout');
-            }
 
             fetch('{{ route("checkout.sidebar") }}', {
                 headers: {

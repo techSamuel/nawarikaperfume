@@ -69,7 +69,17 @@ class CartController extends Controller
         ]);
 
         if ($request->ajax() || $request->wantsJson()) {
-            return response()->json(['success' => true, 'message' => 'Product added to cart!']);
+            return response()->json([
+                'success' => true,
+                'message' => 'Product added to cart!',
+                'product' => [
+                    'id' => (string) $product->id,
+                    'name' => $product->name,
+                    'price' => (float) ($product->sale_price ?? $product->price),
+                    'quantity' => (int) $qty,
+                    'total' => (float) (($product->sale_price ?? $product->price) * $qty),
+                ]
+            ]);
         }
 
         return back()->with('success', 'Product added to cart!');

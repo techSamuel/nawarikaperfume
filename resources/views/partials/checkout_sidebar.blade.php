@@ -101,6 +101,20 @@
     @endif
 </div>
 
+@if(!empty($cartItems))
+<script>
+    if (typeof fbq === 'function') {
+        fbq('track', 'InitiateCheckout', {
+            value: {{ (float) $total }},
+            currency: 'BDT',
+            content_ids: {!! json_encode(array_values(array_map(fn($item) => (string) $item['product']->id, $cartItems))) !!},
+            content_type: 'product',
+            num_items: {{ (int) array_sum(array_column($cartItems, 'quantity')) }}
+        });
+    }
+</script>
+@endif
+
 <script>
     // Bulletproof fix for iOS/Android keyboards hiding the fixed footer
     document.addEventListener('DOMContentLoaded', () => {

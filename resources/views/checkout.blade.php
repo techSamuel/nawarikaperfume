@@ -104,11 +104,11 @@
 <script>
     if (typeof fbq === 'function') {
         fbq('track', 'InitiateCheckout', {
-            value: {{ $total }},
+            value: {{ (float) $total }},
             currency: 'BDT',
-            content_ids: {!! json_encode(array_keys($cartItems ?? [])) !!},
+            content_ids: {!! json_encode(collect($cartItems ?? [])->pluck('product.id')->map(fn($id) => (string) $id)->values()->toArray()) !!},
             content_type: 'product',
-            num_items: {{ count($cartItems ?? []) }}
+            num_items: {{ (int) collect($cartItems ?? [])->sum('quantity') }}
         });
     }
 </script>

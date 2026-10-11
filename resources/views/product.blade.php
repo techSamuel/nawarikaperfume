@@ -1,6 +1,17 @@
 @extends('layouts.app')
 @section('title', $product->name)
 @section('meta_description', Str::limit($product->description, 160))
+@section('og_type', 'product')
+@section('meta_image', $product->image ? asset('uploads/' . $product->image) : '')
+
+@push('meta')
+    <meta property="product:retailer_item_id" content="{{ $product->id }}">
+    <meta property="product:price:amount" content="{{ number_format((float)($product->sale_price ?? $product->price), 2, '.', '') }}">
+    <meta property="product:price:currency" content="BDT">
+    <meta property="product:availability" content="{{ $product->isInStock() ? 'in stock' : 'out of stock' }}">
+    <meta property="product:condition" content="new">
+    <meta property="product:brand" content="{{ $settings['site_name'] ?? 'LUXE' }}">
+@endpush
 
 @php
     // Prepare unified media array (Main image, gallery images, videos)
@@ -20,7 +31,7 @@
     }
     $hasMedia = count($mediaList) > 0;
 
-    // Structured Data for Google Rich Snippets
+    // Structured Data for Google Rich Snippets & Meta Microdata
     $schemaImages = [];
     if ($product->image) {
         $schemaImages[] = asset('uploads/' . $product->image);
@@ -36,7 +47,8 @@
         'name' => $product->name,
         'image' => $schemaImages,
         'description' => Str::limit($product->description, 300),
-        'sku' => 'PROD-' . $product->id,
+        'sku' => (string) $product->id,
+        'productID' => (string) $product->id,
         'brand' => [
             '@type' => 'Brand',
             'name' => $settings['site_name'] ?? 'LUXE',

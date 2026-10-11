@@ -26,6 +26,7 @@ Route::post('/contact', [HomeController::class, 'submitContact'])->name('contact
 Route::get('/faq', [HomeController::class, 'faq'])->name('faq');
 Route::get('/shipping-policy', [HomeController::class, 'shippingPolicy'])->name('shipping.policy');
 Route::get('/return-policy', [HomeController::class, 'returnPolicy'])->name('return.policy');
+Route::get('/privacy-policy', [HomeController::class, 'privacyPolicy'])->name('privacy.policy');
 Route::get('/api/products/search', [ShopController::class, 'liveSearch'])->name('api.products.search');
 Route::post('/api/visitor/ping', [ShopController::class, 'pingVisitorLog'])->name('api.visitor.ping');
 

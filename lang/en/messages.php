@@ -39,4 +39,7 @@ return [
     'popular_searches' => 'Popular Searches',
     'search_placeholder' => 'Search products, brands, or categories...',
     'all_categories' => 'All Categories',
+    'shipping_policy' => 'Shipping Policy',
+    'return_policy' => 'Return Policy',
+    'privacy_policy' => 'Privacy Policy',
 ];

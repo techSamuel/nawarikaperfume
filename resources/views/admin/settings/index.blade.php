@@ -365,6 +365,256 @@
             </div>
             @endif
 
+            @if($tab == 'policies')
+            {{-- POLICY PAGES SETTINGS --}}
+            <div style="grid-column: span 2;">
+                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
+                    <div>
+                        <h3 style="margin: 0; color: var(--text-primary); font-size: 1.3rem;">📜 Policy & Legal Pages Management</h3>
+                        <p style="margin: 4px 0 0; color: var(--text-muted); font-size: 0.9rem;">
+                            Edit content for Return Policy, Shipping Policy, and Privacy Policy using HTML. Changes appear live on the front-end.
+                        </p>
+                    </div>
+                </div>
+
+                {{-- Policy Sub-Tabs --}}
+                <div style="display: flex; gap: 10px; margin-bottom: 24px; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; flex-wrap: wrap;">
+                    <button type="button" class="policy-tab-btn active" id="btn_tab_return" onclick="switchPolicySubtab('return')" style="padding: 10px 20px; border-radius: 8px; border: 1px solid var(--accent-primary, #13b461); background: var(--accent-primary, #13b461); color: white; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: all 0.2s;">
+                        <span>🔄</span> রিটার্ন পলিসি (Return Policy)
+                    </button>
+                    <button type="button" class="policy-tab-btn" id="btn_tab_shipping" onclick="switchPolicySubtab('shipping')" style="padding: 10px 20px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-tertiary); color: var(--text-secondary); font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: all 0.2s;">
+                        <span>🚚</span> শিপিং পলিসি (Shipping Policy)
+                    </button>
+                    <button type="button" class="policy-tab-btn" id="btn_tab_privacy" onclick="switchPolicySubtab('privacy')" style="padding: 10px 20px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-tertiary); color: var(--text-secondary); font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: all 0.2s;">
+                        <span>🔒</span> প্রাইভেসি পলিসি (Privacy Policy)
+                    </button>
+                </div>
+
+                {{-- 1. RETURN POLICY PANEL --}}
+                <div class="policy-editor-panel" id="panel_policy_return" style="display: block;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px;">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span style="font-size: 1.1rem; font-weight: 700; color: var(--text-primary);">🔄 Return Policy Content</span>
+                            <span style="font-size: 0.8rem; padding: 2px 8px; background: rgba(19, 180, 97, 0.15); color: #10b981; border-radius: 12px; font-weight: 600;">Live Route: /return-policy</span>
+                        </div>
+                        <div style="display: flex; gap: 8px;">
+                            <a href="{{ route('return.policy') }}" target="_blank" style="padding: 6px 14px; background: rgba(255,255,255,0.06); border: 1px solid var(--border-color); color: var(--text-primary); border-radius: 6px; font-size: 0.85rem; text-decoration: none; display: flex; align-items: center; gap: 6px;">
+                                🌐 View Live Page ↗
+                            </a>
+                        </div>
+                    </div>
+
+                    {{-- HTML Quick Toolbar --}}
+                    <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); border-bottom: none; border-radius: 8px 8px 0 0; padding: 8px 12px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+                        <div style="display: flex; gap: 6px; flex-wrap: wrap; align-items: center;">
+                            <span style="font-size: 0.8rem; color: var(--text-muted); margin-right: 4px;">Insert HTML:</span>
+                            <button type="button" class="btn-tool" onclick="insertTag('return_policy_content', '<h3>', '</h3>', 'শিরোনাম লিখুন')" title="Heading 3">H3</button>
+                            <button type="button" class="btn-tool" onclick="insertTag('return_policy_content', '<h4>', '</h4>', 'উপ-শিরোনাম')" title="Heading 4">H4</button>
+                            <button type="button" class="btn-tool" onclick="insertTag('return_policy_content', '<p>', '</p>', 'প্যারাগ্রাফ লিখুন')" title="Paragraph">&lt;p&gt;</button>
+                            <button type="button" class="btn-tool" onclick="insertTag('return_policy_content', '<strong>', '</strong>', 'বোল্ড লেখা')" title="Bold">&lt;b&gt;</button>
+                            <button type="button" class="btn-tool" onclick="insertTag('return_policy_content', '<ul>\n  <li>', '</li>\n</ul>', 'তালিকা পয়েন্ট')" title="Bullet List">&lt;ul&gt;</button>
+                            <button type="button" class="btn-tool" onclick="insertTag('return_policy_content', '<div class=\"policy-highlight-box\" style=\"background: rgba(19, 180, 97, 0.08); border-left: 4px solid #13b461; padding: 16px; border-radius: 8px; margin-bottom: 20px;\">\n  <h4 style=\"margin-top:0; color:#13b461;\">বিজ্ঞপ্তি</h4>\n  <p>', '</p>\n</div>', 'জরুরি বার্তা')" title="Notice Box">💡 Notice Box</button>
+                            <button type="button" class="btn-tool" onclick="insertTag('return_policy_content', '<a href=\"#\" style=\"color: #13b461; text-decoration: underline;\">', '</a>', 'লিংক টেক্সট')" title="Link">🔗 Link</button>
+                            <button type="button" class="btn-tool" onclick="insertTag('return_policy_content', '<br>', '', '')" title="Line Break">&lt;br&gt;</button>
+                        </div>
+                        <div style="display: flex; gap: 6px;">
+                            <button type="button" class="btn-view active" id="btn_view_code_return" onclick="toggleViewMode('return', 'code')">💻 HTML Code</button>
+                            <button type="button" class="btn-view" id="btn_view_preview_return" onclick="toggleViewMode('return', 'preview')">👁️ Live Preview</button>
+                        </div>
+                    </div>
+
+                    {{-- Textarea Editor --}}
+                    <div id="editor_wrap_return">
+                        <textarea name="return_policy_content" id="return_policy_content" rows="18" class="form-control html-code-editor" style="width: 100%; padding: 14px; background: #0f111a; border: 1px solid var(--border-color); color: #e2e8f0; border-radius: 0 0 8px 8px; font-family: 'Consolas', 'Fira Code', 'Courier New', monospace; font-size: 0.95rem; line-height: 1.6; min-height: 440px; resize: vertical;" placeholder="Enter return policy HTML content here...">{{ $settings['return_policy_content'] ?? '' }}</textarea>
+                    </div>
+
+                    {{-- Live Preview Box --}}
+                    <div id="preview_wrap_return" style="display: none; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 0 0 8px 8px; padding: 32px; min-height: 440px; color: var(--text-secondary); line-height: 1.8;">
+                    </div>
+                </div>
+
+                {{-- 2. SHIPPING POLICY PANEL --}}
+                <div class="policy-editor-panel" id="panel_policy_shipping" style="display: none;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px;">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span style="font-size: 1.1rem; font-weight: 700; color: var(--text-primary);">🚚 Shipping Policy Content</span>
+                            <span style="font-size: 0.8rem; padding: 2px 8px; background: rgba(19, 180, 97, 0.15); color: #10b981; border-radius: 12px; font-weight: 600;">Live Route: /shipping-policy</span>
+                        </div>
+                        <div style="display: flex; gap: 8px;">
+                            <a href="{{ route('shipping.policy') }}" target="_blank" style="padding: 6px 14px; background: rgba(255,255,255,0.06); border: 1px solid var(--border-color); color: var(--text-primary); border-radius: 6px; font-size: 0.85rem; text-decoration: none; display: flex; align-items: center; gap: 6px;">
+                                🌐 View Live Page ↗
+                            </a>
+                        </div>
+                    </div>
+
+                    {{-- HTML Quick Toolbar --}}
+                    <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); border-bottom: none; border-radius: 8px 8px 0 0; padding: 8px 12px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+                        <div style="display: flex; gap: 6px; flex-wrap: wrap; align-items: center;">
+                            <span style="font-size: 0.8rem; color: var(--text-muted); margin-right: 4px;">Insert HTML:</span>
+                            <button type="button" class="btn-tool" onclick="insertTag('shipping_policy_content', '<h3>', '</h3>', 'শিরোনাম লিখুন')" title="Heading 3">H3</button>
+                            <button type="button" class="btn-tool" onclick="insertTag('shipping_policy_content', '<h4>', '</h4>', 'উপ-শিরোনাম')" title="Heading 4">H4</button>
+                            <button type="button" class="btn-tool" onclick="insertTag('shipping_policy_content', '<p>', '</p>', 'প্যারাগ্রাফ লিখুন')" title="Paragraph">&lt;p&gt;</button>
+                            <button type="button" class="btn-tool" onclick="insertTag('shipping_policy_content', '<strong>', '</strong>', 'বোল্ড লেখা')" title="Bold">&lt;b&gt;</button>
+                            <button type="button" class="btn-tool" onclick="insertTag('shipping_policy_content', '<ul>\n  <li>', '</li>\n</ul>', 'তালিকা পয়েন্ট')" title="Bullet List">&lt;ul&gt;</button>
+                            <button type="button" class="btn-tool" onclick="insertTag('shipping_policy_content', '<div class=\"policy-highlight-box\" style=\"background: rgba(19, 180, 97, 0.08); border-left: 4px solid #13b461; padding: 16px; border-radius: 8px; margin-bottom: 20px;\">\n  <h4 style=\"margin-top:0; color:#13b461;\">বিজ্ঞপ্তি</h4>\n  <p>', '</p>\n</div>', 'জরুরি বার্তা')" title="Notice Box">💡 Notice Box</button>
+                            <button type="button" class="btn-tool" onclick="insertTag('shipping_policy_content', '<a href=\"#\" style=\"color: #13b461; text-decoration: underline;\">', '</a>', 'লিংক টেক্সট')" title="Link">🔗 Link</button>
+                            <button type="button" class="btn-tool" onclick="insertTag('shipping_policy_content', '<br>', '', '')" title="Line Break">&lt;br&gt;</button>
+                        </div>
+                        <div style="display: flex; gap: 6px;">
+                            <button type="button" class="btn-view active" id="btn_view_code_shipping" onclick="toggleViewMode('shipping', 'code')">💻 HTML Code</button>
+                            <button type="button" class="btn-view" id="btn_view_preview_shipping" onclick="toggleViewMode('shipping', 'preview')">👁️ Live Preview</button>
+                        </div>
+                    </div>
+
+                    {{-- Textarea Editor --}}
+                    <div id="editor_wrap_shipping">
+                        <textarea name="shipping_policy_content" id="shipping_policy_content" rows="18" class="form-control html-code-editor" style="width: 100%; padding: 14px; background: #0f111a; border: 1px solid var(--border-color); color: #e2e8f0; border-radius: 0 0 8px 8px; font-family: 'Consolas', 'Fira Code', 'Courier New', monospace; font-size: 0.95rem; line-height: 1.6; min-height: 440px; resize: vertical;" placeholder="Enter shipping policy HTML content here...">{{ $settings['shipping_policy_content'] ?? '' }}</textarea>
+                    </div>
+
+                    {{-- Live Preview Box --}}
+                    <div id="preview_wrap_shipping" style="display: none; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 0 0 8px 8px; padding: 32px; min-height: 440px; color: var(--text-secondary); line-height: 1.8;">
+                    </div>
+                </div>
+
+                {{-- 3. PRIVACY POLICY PANEL --}}
+                <div class="policy-editor-panel" id="panel_policy_privacy" style="display: none;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px;">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span style="font-size: 1.1rem; font-weight: 700; color: var(--text-primary);">🔒 Privacy Policy Content</span>
+                            <span style="font-size: 0.8rem; padding: 2px 8px; background: rgba(19, 180, 97, 0.15); color: #10b981; border-radius: 12px; font-weight: 600;">Live Route: /privacy-policy</span>
+                        </div>
+                        <div style="display: flex; gap: 8px;">
+                            <a href="{{ route('privacy.policy') }}" target="_blank" style="padding: 6px 14px; background: rgba(255,255,255,0.06); border: 1px solid var(--border-color); color: var(--text-primary); border-radius: 6px; font-size: 0.85rem; text-decoration: none; display: flex; align-items: center; gap: 6px;">
+                                🌐 View Live Page ↗
+                            </a>
+                        </div>
+                    </div>
+
+                    {{-- HTML Quick Toolbar --}}
+                    <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); border-bottom: none; border-radius: 8px 8px 0 0; padding: 8px 12px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+                        <div style="display: flex; gap: 6px; flex-wrap: wrap; align-items: center;">
+                            <span style="font-size: 0.8rem; color: var(--text-muted); margin-right: 4px;">Insert HTML:</span>
+                            <button type="button" class="btn-tool" onclick="insertTag('privacy_policy_content', '<h3>', '</h3>', 'শিরোনাম লিখুন')" title="Heading 3">H3</button>
+                            <button type="button" class="btn-tool" onclick="insertTag('privacy_policy_content', '<h4>', '</h4>', 'উপ-শিরোনাম')" title="Heading 4">H4</button>
+                            <button type="button" class="btn-tool" onclick="insertTag('privacy_policy_content', '<p>', '</p>', 'প্যারাগ্রাফ লিখুন')" title="Paragraph">&lt;p&gt;</button>
+                            <button type="button" class="btn-tool" onclick="insertTag('privacy_policy_content', '<strong>', '</strong>', 'বোল্ড লেখা')" title="Bold">&lt;b&gt;</button>
+                            <button type="button" class="btn-tool" onclick="insertTag('privacy_policy_content', '<ul>\n  <li>', '</li>\n</ul>', 'তালিকা পয়েন্ট')" title="Bullet List">&lt;ul&gt;</button>
+                            <button type="button" class="btn-tool" onclick="insertTag('privacy_policy_content', '<div class=\"policy-highlight-box\" style=\"background: rgba(19, 180, 97, 0.08); border-left: 4px solid #13b461; padding: 16px; border-radius: 8px; margin-bottom: 20px;\">\n  <h4 style=\"margin-top:0; color:#13b461;\">বিজ্ঞপ্তি</h4>\n  <p>', '</p>\n</div>', 'জরুরি বার্তা')" title="Notice Box">💡 Notice Box</button>
+                            <button type="button" class="btn-tool" onclick="insertTag('privacy_policy_content', '<a href=\"#\" style=\"color: #13b461; text-decoration: underline;\">', '</a>', 'লিংক টেক্সট')" title="Link">🔗 Link</button>
+                            <button type="button" class="btn-tool" onclick="insertTag('privacy_policy_content', '<br>', '', '')" title="Line Break">&lt;br&gt;</button>
+                        </div>
+                        <div style="display: flex; gap: 6px;">
+                            <button type="button" class="btn-view active" id="btn_view_code_privacy" onclick="toggleViewMode('privacy', 'code')">💻 HTML Code</button>
+                            <button type="button" class="btn-view" id="btn_view_preview_privacy" onclick="toggleViewMode('privacy', 'preview')">👁️ Live Preview</button>
+                        </div>
+                    </div>
+
+                    {{-- Textarea Editor --}}
+                    <div id="editor_wrap_privacy">
+                        <textarea name="privacy_policy_content" id="privacy_policy_content" rows="18" class="form-control html-code-editor" style="width: 100%; padding: 14px; background: #0f111a; border: 1px solid var(--border-color); color: #e2e8f0; border-radius: 0 0 8px 8px; font-family: 'Consolas', 'Fira Code', 'Courier New', monospace; font-size: 0.95rem; line-height: 1.6; min-height: 440px; resize: vertical;" placeholder="Enter privacy policy HTML content here...">{{ $settings['privacy_policy_content'] ?? '' }}</textarea>
+                    </div>
+
+                    {{-- Live Preview Box --}}
+                    <div id="preview_wrap_privacy" style="display: none; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 0 0 8px 8px; padding: 32px; min-height: 440px; color: var(--text-secondary); line-height: 1.8;">
+                    </div>
+                </div>
+
+                {{-- CSS for Policy Editor in Admin --}}
+                <style>
+                    .btn-tool {
+                        background: rgba(255,255,255,0.06);
+                        border: 1px solid var(--border-color);
+                        color: var(--text-primary);
+                        padding: 4px 10px;
+                        border-radius: 4px;
+                        font-size: 0.78rem;
+                        font-family: inherit;
+                        cursor: pointer;
+                        transition: background 0.15s;
+                    }
+                    .btn-tool:hover {
+                        background: rgba(255,255,255,0.15);
+                        border-color: var(--accent-primary, #13b461);
+                    }
+                    .btn-view {
+                        background: transparent;
+                        border: 1px solid transparent;
+                        color: var(--text-muted);
+                        padding: 4px 12px;
+                        border-radius: 4px;
+                        font-size: 0.8rem;
+                        font-weight: 600;
+                        cursor: pointer;
+                    }
+                    .btn-view.active {
+                        background: rgba(19, 180, 97, 0.2);
+                        color: #10b981;
+                        border-color: rgba(19, 180, 97, 0.4);
+                    }
+                    .html-code-editor:focus {
+                        outline: none;
+                        border-color: var(--accent-primary, #13b461) !important;
+                        box-shadow: 0 0 0 2px rgba(19, 180, 97, 0.2);
+                    }
+                </style>
+
+                {{-- JavaScript for Policy Editor --}}
+                <script>
+                    function switchPolicySubtab(type) {
+                        ['return', 'shipping', 'privacy'].forEach(t => {
+                            const btn = document.getElementById('btn_tab_' + t);
+                            const panel = document.getElementById('panel_policy_' + t);
+                            if (t === type) {
+                                btn.style.background = 'var(--accent-primary, #13b461)';
+                                btn.style.borderColor = 'var(--accent-primary, #13b461)';
+                                btn.style.color = '#fff';
+                                panel.style.display = 'block';
+                            } else {
+                                btn.style.background = 'var(--bg-tertiary)';
+                                btn.style.borderColor = 'var(--border-color)';
+                                btn.style.color = 'var(--text-secondary)';
+                                panel.style.display = 'none';
+                            }
+                        });
+                    }
+
+                    function toggleViewMode(type, mode) {
+                        const editorWrap = document.getElementById('editor_wrap_' + type);
+                        const previewWrap = document.getElementById('preview_wrap_' + type);
+                        const btnCode = document.getElementById('btn_view_code_' + type);
+                        const btnPreview = document.getElementById('btn_view_preview_' + type);
+                        const textarea = document.getElementById(type + '_policy_content');
+
+                        if (mode === 'preview') {
+                            previewWrap.innerHTML = textarea.value || '<p style="color:var(--text-muted); text-align:center;">কোনো কনটেন্ট লেখা হয়নি</p>';
+                            editorWrap.style.display = 'none';
+                            previewWrap.style.display = 'block';
+                            btnPreview.classList.add('active');
+                            btnCode.classList.remove('active');
+                        } else {
+                            editorWrap.style.display = 'block';
+                            previewWrap.style.display = 'none';
+                            btnCode.classList.add('active');
+                            btnPreview.classList.remove('active');
+                        }
+                    }
+
+                    function insertTag(textareaId, openTag, closeTag, defaultText) {
+                        const textarea = document.getElementById(textareaId);
+                        if (!textarea) return;
+
+                        const start = textarea.selectionStart;
+                        const end = textarea.selectionEnd;
+                        const selectedText = textarea.value.substring(start, end) || defaultText;
+                        const replacement = openTag + selectedText + closeTag;
+
+                        textarea.focus();
+                        textarea.setRangeText(replacement, start, end, 'end');
+                    }
+                </script>
+            </div>
+            @endif
+
         </div>
 
         <div style="margin-top: 32px; border-top: 1px solid var(--border-color); padding-top: 24px; text-align: right;">

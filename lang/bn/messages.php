@@ -39,4 +39,7 @@ return [
     'popular_searches' => 'জনপ্রিয় সার্চ:',
     'search_placeholder' => 'প্রোডাক্টের নাম বা ক্যাটাগরি খুঁজুন...',
     'all_categories' => 'সকল ক্যাটাগরি',
+    'shipping_policy' => 'শিপিং পলিসি',
+    'return_policy' => 'রিটার্ন পলিসি',
+    'privacy_policy' => 'প্রাইভেসি পলিসি',
 ];

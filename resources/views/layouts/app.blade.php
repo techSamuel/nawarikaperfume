@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     @php
         $defaultTitle = $settings['site_name'] ?? 'LUXE';
-        $metaTitle = $settings['meta_title'] ?: $defaultTitle;
-        $metaDesc = $settings['meta_description'] ?: 'Premium shopping experience with exclusive collections and curated products.';
-        $metaKeywords = $settings['meta_keywords'] ?: 'ecommerce, shop, online store';
+        $metaTitle = (!empty($settings['meta_title'])) ? $settings['meta_title'] : $defaultTitle;
+        $metaDesc = (!empty($settings['meta_description'])) ? $settings['meta_description'] : 'Premium shopping experience with exclusive collections and curated products.';
+        $metaKeywords = (!empty($settings['meta_keywords'])) ? $settings['meta_keywords'] : 'ecommerce, shop, online store';
         $socialImage = !empty($settings['social_preview_image']) ? asset('uploads/' . $settings['social_preview_image']) : (!empty($settings['site_logo_dark']) ? asset('uploads/' . $settings['site_logo_dark']) : '');
     @endphp
 
@@ -302,8 +302,9 @@
                     <ul class="footer-links">
                         <li><a href="{{ route('contact') }}">Contact Us</a></li>
                         <li><a href="{{ route('faq') }}">FAQs</a></li>
-                        <li><a href="{{ route('shipping.policy') }}">Shipping Policy</a></li>
-                        <li><a href="{{ route('return.policy') }}">Return Policy</a></li>
+                        <li><a href="{{ route('shipping.policy') }}">{{ __('messages.shipping_policy') }}</a></li>
+                        <li><a href="{{ route('return.policy') }}">{{ __('messages.return_policy') }}</a></li>
+                        <li><a href="{{ route('privacy.policy') }}">{{ __('messages.privacy_policy') }}</a></li>
                     </ul>
                 </div>
             </div>

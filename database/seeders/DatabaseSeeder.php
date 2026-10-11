@@ -152,5 +152,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         OrderItem::create(['order_id' => $order3->id, 'product_id' => 2, 'product_name' => 'Smart Watch Pro', 'price' => 4500.00, 'quantity' => 1]);
+
+        $this->call(PolicySettingsSeeder::class);
     }
 }

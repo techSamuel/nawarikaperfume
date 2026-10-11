@@ -39,8 +39,11 @@
                     <a href="{{ route('admin.categories.index') }}" class="sidebar-link {{ request()->routeIs('admin.categories.*') ? 'active' : '' }}">
                         <span class="icon">📂</span> Categories
                     </a>
-                    <a href="{{ route('admin.products.index') }}" class="sidebar-link {{ request()->routeIs('admin.products.*') ? 'active' : '' }}">
+                    <a href="{{ route('admin.products.index') }}" class="sidebar-link {{ request()->routeIs('admin.products.*') && !request()->routeIs('admin.products.organizer*') ? 'active' : '' }}">
                         <span class="icon">📦</span> Products
+                    </a>
+                    <a href="{{ route('admin.products.organizer') }}" class="sidebar-link {{ request()->routeIs('admin.products.organizer*') ? 'active' : '' }}">
+                        <span class="icon">🔀</span> Product Organizer
                     </a>
                 </div>
                 <div class="sidebar-section">

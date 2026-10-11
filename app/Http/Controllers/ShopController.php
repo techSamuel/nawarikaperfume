@@ -38,7 +38,7 @@ class ShopController extends Controller
             'price_low' => $query->orderBy('price', 'asc'),
             'price_high' => $query->orderBy('price', 'desc'),
             'name' => $query->orderBy('name', 'asc'),
-            default => $query->orderBy('id', 'asc'),
+            default => $query->orderBy('sort_order', 'asc')->orderBy('id', 'asc'),
         };
 
         $products = $query->paginate(12)->withQueryString();

@@ -9,7 +9,8 @@ class Product extends Model
 {
     protected $fillable = [
         'category_id', 'name', 'name_bn', 'slug', 'description', 'description_bn', 'price',
-        'sale_price', 'delivery_charge', 'image', 'gallery', 'videos', 'stock', 'is_active', 'is_featured'
+        'sale_price', 'delivery_charge', 'image', 'gallery', 'videos', 'stock', 'is_active', 'is_featured',
+        'sort_order', 'featured_order'
     ];
 
     protected $casts = [
@@ -20,6 +21,8 @@ class Product extends Model
         'videos' => 'array',
         'is_active' => 'boolean',
         'is_featured' => 'boolean',
+        'sort_order' => 'integer',
+        'featured_order' => 'integer',
     ];
 
     protected static function boot()

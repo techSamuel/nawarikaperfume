@@ -157,4 +157,109 @@ class ProductController extends Controller
 
         return redirect()->route('admin.products.index')->with('success', 'Product deleted successfully.');
     }
+
+    /**
+     * Display the Product Organizer page to organize product serials.
+     */
+    public function organizer(Request $request)
+    {
+        $scope = $request->input('scope', 'featured');
+        $selectedCategoryId = $request->input('category_id');
+
+        $categories = Category::active()->withCount('products')->orderBy('name')->get();
+        $featuredCount = Product::featured()->count();
+        $totalProducts = Product::count();
+
+        $query = Product::with('category');
+
+        if ($scope === 'featured') {
+            $products = $query->featured()
+                ->orderBy('featured_order', 'asc')
+                ->orderBy('id', 'asc')
+                ->get();
+        } elseif ($scope === 'category') {
+            if ($selectedCategoryId) {
+                $query->where('category_id', $selectedCategoryId);
+            } elseif ($categories->isNotEmpty()) {
+                // Default to first category if none selected
+                $selectedCategoryId = $categories->first()->id;
+                $query->where('category_id', $selectedCategoryId);
+            }
+            $products = $query->orderBy('sort_order', 'asc')
+                ->orderBy('id', 'asc')
+                ->get();
+        } else {
+            // All products
+            $scope = 'all';
+            if ($selectedCategoryId) {
+                $query->where('category_id', $selectedCategoryId);
+            }
+            $products = $query->orderBy('sort_order', 'asc')
+                ->orderBy('id', 'asc')
+                ->get();
+        }
+
+        return view('admin.products.organizer', compact(
+            'products',
+            'categories',
+            'scope',
+            'selectedCategoryId',
+            'featuredCount',
+            'totalProducts'
+        ));
+    }
+
+    /**
+     * Update the serial / sort orders for products via AJAX.
+     */
+    public function updateOrder(Request $request)
+    {
+        $scope = $request->input('scope', 'featured');
+        $orders = $request->input('orders', []);
+
+        if (empty($orders) || !is_array($orders)) {
+            return response()->json(['success' => false, 'message' => 'No order data received.'], 400);
+        }
+
+        \Illuminate\Support\Facades\DB::transaction(function () use ($scope, $orders) {
+            foreach ($orders as $key => $item) {
+                $id = is_array($item) ? ($item['id'] ?? null) : $key;
+                $order = is_array($item) ? ($item['order'] ?? 0) : $item;
+
+                if ($id) {
+                    if ($scope === 'featured') {
+                        Product::where('id', $id)->update(['featured_order' => (int) $order]);
+                    } else {
+                        Product::where('id', $id)->update(['sort_order' => (int) $order]);
+                    }
+                }
+            }
+        });
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Product serial orders updated successfully!'
+        ]);
+    }
+
+    /**
+     * Toggle a product's featured status from the organizer.
+     */
+    public function toggleFeatured(Request $request, Product $product)
+    {
+        $newStatus = !$product->is_featured;
+        $data = ['is_featured' => $newStatus];
+
+        if ($newStatus && ($product->featured_order === 0 || is_null($product->featured_order))) {
+            $data['featured_order'] = (Product::max('featured_order') ?? 0) + 1;
+        }
+
+        $product->update($data);
+
+        return response()->json([
+            'success' => true,
+            'is_featured' => $newStatus,
+            'message' => $newStatus ? 'Product marked as Featured.' : 'Product removed from Featured.'
+        ]);
+    }
 }

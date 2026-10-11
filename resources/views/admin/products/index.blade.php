@@ -2,6 +2,7 @@
 @section('title', 'Products')
 @section('page_title', 'Products')
 @section('header_actions')
+    <a href="{{ route('admin.products.organizer') }}" class="btn btn-outline btn-sm" style="margin-right: 8px;">🔀 Product Organizer</a>
     <a href="{{ route('admin.products.create') }}" class="btn btn-primary btn-sm">+ Add Product</a>
 @endsection
 

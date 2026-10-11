@@ -96,6 +96,9 @@ Route::middleware(['auth', \App\Http\Middleware\AdminMiddleware::class])
         Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
         Route::resource('categories', CategoryController::class)->except(['show']);
+        Route::get('/products/organizer', [ProductController::class, 'organizer'])->name('products.organizer');
+        Route::post('/products/organizer/update-order', [ProductController::class, 'updateOrder'])->name('products.organizer.update-order');
+        Route::post('/products/{product}/toggle-featured', [ProductController::class, 'toggleFeatured'])->name('products.toggle-featured');
         Route::resource('products', ProductController::class)->except(['show']);
         Route::post('/products/{product}/generate-ai-reviews', [ProductReviewController::class, 'generateAiReviews'])->name('products.generate-ai-reviews');
         Route::post('/products/{product}/save-ai-reviews', [ProductReviewController::class, 'saveAiReviews'])->name('products.save-ai-reviews');

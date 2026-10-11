@@ -109,6 +109,7 @@ class SendFacebookCapiEvent implements ShouldQueue
             $accessToken = $settings['capi_token'] ?? null;
 
             if (empty($pixelId) || empty($accessToken)) {
+                Log::warning('Facebook CAPI Skipped: fb_pixel_id or capi_token is missing in site settings.');
                 return;
             }
 
@@ -159,16 +160,28 @@ class SendFacebookCapiEvent implements ShouldQueue
                 $eventData['event_source_url'] = $this->eventSourceUrl;
             }
 
-            $response = Http::post("https://graph.facebook.com/v19.0/{$pixelId}/events", [
+            $postPayload = [
                 'data' => [$eventData],
                 'access_token' => $accessToken,
-            ]);
+            ];
+
+            if (!empty($settings['capi_test_code'])) {
+                $postPayload['test_event_code'] = trim($settings['capi_test_code']);
+            }
+
+            $response = Http::post("https://graph.facebook.com/v19.0/{$pixelId}/events", $postPayload);
 
             if ($response->failed()) {
                 Log::error('Facebook CAPI Error', [
                     'response' => $response->json(),
                     'event' => $this->eventName,
                     'event_id' => $this->eventId
+                ]);
+            } else {
+                Log::info('Facebook CAPI Event Sent Successfully', [
+                    'event' => $this->eventName,
+                    'event_id' => $this->eventId,
+                    'response' => $response->json()
                 ]);
             }
         } catch (\Exception $e) {

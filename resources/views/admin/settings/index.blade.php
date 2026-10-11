@@ -379,7 +379,13 @@
                     <div class="form-group" style="grid-column: span 2;">
                         <label for="capi_token" style="display:block; margin-bottom: 8px;">Facebook Conversions API (CAPI) Token</label>
                         <input type="text" name="capi_token" id="capi_token" class="form-control" value="{{ $settings['capi_token'] ?? '' }}" placeholder="Long CAPI Token string..." style="width: 100%; padding: 10px; background: var(--bg-tertiary); border: 1px solid var(--border-color); color: white; border-radius: 8px;">
-                        <small style="color: var(--text-muted); display:block; margin-top: 4px;">Currently stored for future backend event integrations.</small>
+                        <small style="color: var(--text-muted); display:block; margin-top: 4px;">Generated from Meta Events Manager &rarr; Settings &rarr; Conversions API &rarr; Generate access token.</small>
+                    </div>
+
+                    <div class="form-group" style="grid-column: span 2;">
+                        <label for="capi_test_code" style="display:block; margin-bottom: 8px;">Meta CAPI Test Event Code (Optional)</label>
+                        <input type="text" name="capi_test_code" id="capi_test_code" class="form-control" value="{{ $settings['capi_test_code'] ?? '' }}" placeholder="e.g., TEST12345" style="width: 100%; padding: 10px; background: var(--bg-tertiary); border: 1px solid var(--border-color); color: white; border-radius: 8px;">
+                        <small style="color: var(--text-muted); display:block; margin-top: 4px;">Copy from Meta Events Manager &rarr; Test Events tab. Leave blank for live production events.</small>
                     </div>
                 </div>
             </div>

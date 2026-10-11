@@ -75,7 +75,7 @@ class OrderController extends Controller
                     ];
                 }
 
-                \App\Jobs\SendFacebookCapiEvent::dispatch(
+                \App\Jobs\SendFacebookCapiEvent::dispatchSync(
                     'Purchase',
                     [
                         'value' => (float) $order->total,

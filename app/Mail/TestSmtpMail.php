@@ -2,6 +2,7 @@
 
 namespace App\Mail;
 
+use App\Services\MailConfigService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
@@ -12,10 +13,19 @@ class TestSmtpMail extends Mailable
 {
     use Queueable, SerializesModels;
 
+    public array $brand;
+
+    public function __construct()
+    {
+        $this->brand = MailConfigService::getSiteBrandData();
+    }
+
     public function envelope(): Envelope
     {
+        $siteName = $this->brand['siteName'] ?? config('app.name', 'Nawarika');
+
         return new Envelope(
-            subject: '✅ SMTP Configuration Test Successful - ' . config('app.name', 'Nawarika Perfume'),
+            subject: "🧪 SMTP টেস্ট সফল হয়েছে - {$siteName}",
         );
     }
 
@@ -23,6 +33,9 @@ class TestSmtpMail extends Mailable
     {
         return new Content(
             view: 'emails.test_smtp',
+            with: [
+                'brand' => $this->brand,
+            ],
         );
     }
 

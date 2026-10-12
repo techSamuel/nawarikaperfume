@@ -3,6 +3,7 @@
 namespace App\Mail;
 
 use App\Models\Order;
+use App\Services\MailConfigService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
@@ -13,14 +14,19 @@ class AdminNewOrderMail extends Mailable
 {
     use Queueable, SerializesModels;
 
+    public array $brand;
+
     public function __construct(public Order $order)
     {
+        $this->brand = MailConfigService::getSiteBrandData();
     }
 
     public function envelope(): Envelope
     {
+        $siteName = $this->brand['siteName'] ?? config('app.name', 'Nawarika');
+
         return new Envelope(
-            subject: '🚨 New Order Received: #' . $this->order->order_number . ' (৳' . number_format($this->order->total, 2) . ')',
+            subject: "🚨 নতুন অর্ডার! #{$this->order->order_number} (৳" . number_format($this->order->total, 0) . ") - {$siteName}",
         );
     }
 
@@ -28,6 +34,9 @@ class AdminNewOrderMail extends Mailable
     {
         return new Content(
             view: 'emails.admin_new_order',
+            with: [
+                'brand' => $this->brand,
+            ],
         );
     }
 

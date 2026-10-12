@@ -17,6 +17,7 @@ return [
     'new_arrivals' => 'New Arrivals',
     'new_arrivals_subtitle' => 'Fresh drops you don\'t want to miss',
     'view_all_products' => 'View All Products →',
+    'buy' => 'Buy',
     'add_to_cart' => 'Add to Cart',
     'out_of_stock' => 'Out of Stock',
     'in_stock' => 'In Stock',

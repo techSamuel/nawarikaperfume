@@ -17,6 +17,7 @@ return [
     'new_arrivals' => 'নতুন কালেকশন',
     'new_arrivals_subtitle' => 'একদম নতুন ডিজাইন ও অফারসমূহ',
     'view_all_products' => 'সব প্রোডাক্ট দেখুন →',
+    'buy' => 'কিনুন',
     'add_to_cart' => 'কার্টে যোগ করুন',
     'out_of_stock' => 'স্টক শেষ',
     'in_stock' => 'স্টকে আছে',

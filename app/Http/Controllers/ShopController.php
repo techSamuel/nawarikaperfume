@@ -135,7 +135,12 @@ class ShopController extends Controller
 
     public function facebookCatalogFeed()
     {
-        $products = Product::active()->with('category')->get();
+        // Follow Product Organizer & Serial Manager in DESC order (last item in organizer appears first)
+        $products = Product::active()
+            ->with('category')
+            ->orderBy('sort_order', 'desc')
+            ->orderBy('id', 'desc')
+            ->get();
         $settings = \Illuminate\Support\Facades\Cache::remember('site_settings', 60*24, function () {
             return \App\Models\Setting::pluck('value', 'key')->toArray();
         });

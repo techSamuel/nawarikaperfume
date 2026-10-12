@@ -115,15 +115,19 @@ class HomeController extends Controller
 
         \App\Models\ContactMessage::create($validated);
 
+        $eventId = 'cnt_' . bin2hex(random_bytes(6));
+
         \App\Jobs\SendFacebookCapiEvent::send('Contact', [
             'content_name' => $validated['subject'],
         ], [
             'name' => $validated['name'],
             'email' => $validated['email'],
             'phone' => $validated['phone'] ?? null,
-        ]);
+        ], $eventId);
 
-        return redirect()->back()->with('success', 'Your message has been sent successfully. We will get back to you soon.');
+        return redirect()->back()
+            ->with('success', 'Your message has been sent successfully. We will get back to you soon.')
+            ->with('contact_event_id', $eventId);
     }
 
     public function faq()
@@ -157,18 +161,21 @@ class HomeController extends Controller
             ['ip_address' => $request->ip()]
         );
 
+        $eventId = 'sub_' . bin2hex(random_bytes(6));
+
         // Dispatch Meta CAPI Subscribe event
         \App\Jobs\SendFacebookCapiEvent::send('Subscribe', [
             'content_name' => 'Newsletter Subscription',
             'status' => 'success',
         ], [
             'email' => $validated['email'],
-        ]);
+        ], $eventId);
 
         if ($request->ajax() || $request->wantsJson()) {
             return response()->json([
                 'success' => true,
                 'message' => 'Thank you for subscribing to our newsletter!',
+                'event_id' => $eventId,
             ]);
         }
 

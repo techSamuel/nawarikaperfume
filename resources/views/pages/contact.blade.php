@@ -81,7 +81,8 @@
 @if(session('success'))
 <script>
     if (typeof fbq === 'function') {
-        fbq('track', 'Contact');
+        const contactOpts = '{{ session("contact_event_id") }}' ? { eventID: '{{ session("contact_event_id") }}' } : {};
+        fbq('track', 'Contact', {}, contactOpts);
     }
 </script>
 @endif

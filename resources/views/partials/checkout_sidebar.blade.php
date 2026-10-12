@@ -101,7 +101,16 @@
     @endif
 </div>
 
-@if(!empty($cartItems))
+@if(!empty($eventId) && !empty($cartItems))
+    <div id="sidebar-capi-meta" 
+         data-event-id="{{ $eventId }}" 
+         data-total="{{ (float) $total }}" 
+         data-content-ids='{!! json_encode(array_values(array_map(fn($item) => (string) $item["product"]->id, $cartItems))) !!}' 
+         data-num-items="{{ (int) array_sum(array_column($cartItems, 'quantity')) }}"
+         style="display:none;"></div>
+@endif
+
+@if(!empty($eventId) && !empty($cartItems))
 <script>
     if (typeof fbq === 'function') {
         fbq('track', 'InitiateCheckout', {
@@ -110,7 +119,7 @@
             content_ids: {!! json_encode(array_values(array_map(fn($item) => (string) $item['product']->id, $cartItems))) !!},
             content_type: 'product',
             num_items: {{ (int) array_sum(array_column($cartItems, 'quantity')) }}
-        });
+        }, { eventID: '{{ $eventId }}' });
     }
 </script>
 @endif

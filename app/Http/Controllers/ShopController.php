@@ -16,13 +16,15 @@ class ShopController extends Controller
             $query->whereHas('category', fn($q) => $q->where('slug', $request->category));
         }
 
+        $searchEventId = null;
         if ($request->filled('search')) {
             $search = $request->search;
+            $searchEventId = 'srch_' . bin2hex(random_bytes(6));
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
                   ->orWhere('description', 'like', "%{$search}%");
             });
-            \App\Jobs\SendFacebookCapiEvent::send('Search', ['search_string' => $search]);
+            \App\Jobs\SendFacebookCapiEvent::send('Search', ['search_string' => $search], [], $searchEventId);
         }
 
         if ($request->filled('min_price')) {
@@ -44,7 +46,7 @@ class ShopController extends Controller
         $products = $query->paginate(12)->withQueryString();
         $categories = Category::active()->withCount('products')->get();
 
-        return view('shop', compact('products', 'categories'));
+        return view('shop', compact('products', 'categories', 'searchEventId'));
     }
 
     public function show($slug)
@@ -57,15 +59,17 @@ class ShopController extends Controller
             ->where('id', '!=', $product->id)
             ->take(4)->get();
 
+        $eventId = 'vc_' . $product->id . '_' . bin2hex(random_bytes(6));
+
         \App\Jobs\SendFacebookCapiEvent::send('ViewContent', [
             'content_name' => $product->name,
             'content_ids' => [(string) $product->id],
             'content_type' => 'product',
             'value' => (float) ($product->sale_price ?? $product->price),
             'currency' => 'BDT'
-        ]);
+        ], [], $eventId);
 
-        return view('product', compact('product', 'relatedProducts'));
+        return view('product', compact('product', 'relatedProducts', 'eventId'));
     }
 
     public function liveSearch(Request $request)

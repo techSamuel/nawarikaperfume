@@ -43,7 +43,7 @@ class SendFacebookCapiEvent implements ShouldQueue
     {
         $this->eventName = $eventName;
         $this->customData = $customData;
-        $this->eventId = $eventId ?? ($customData['order_id'] ?? null);
+        $this->eventId = $eventId ?? ($customData['event_id'] ?? ($customData['order_id'] ?? null));
         $this->eventTime = $eventTime ?? time();
 
         // If explicit customer data is passed (e.g. from Order model upon Admin Confirm)
@@ -169,7 +169,11 @@ class SendFacebookCapiEvent implements ShouldQueue
             }
 
             if (!empty($this->customData)) {
-                $eventData['custom_data'] = $this->customData;
+                $customPayload = $this->customData;
+                unset($customPayload['event_id']);
+                if (!empty($customPayload)) {
+                    $eventData['custom_data'] = $customPayload;
+                }
             }
 
             if ($this->eventSourceUrl) {

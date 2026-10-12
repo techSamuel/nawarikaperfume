@@ -56,14 +56,16 @@ class WishlistController extends Controller
             $added = true;
             $message = 'Product added to wishlist!';
 
-            // Dispatch Meta CAPI AddToWishlist event
+            $eventId = 'wl_' . $product->id . '_' . bin2hex(random_bytes(6));
+
+            // Dispatch Meta CAPI AddToWishlist event with deduplication key
             SendFacebookCapiEvent::send('AddToWishlist', [
                 'content_name' => $product->name,
                 'content_ids' => [(string) $product->id],
                 'content_type' => 'product',
                 'value' => (float) ($product->sale_price ?? $product->price),
                 'currency' => 'BDT',
-            ]);
+            ], [], $eventId);
         }
 
         $count = $this->getQuery()->count();
@@ -74,6 +76,7 @@ class WishlistController extends Controller
                 'added' => $added,
                 'count' => $count,
                 'message' => $message,
+                'event_id' => $eventId ?? null,
                 'product' => [
                     'id' => (string) $product->id,
                     'name' => $product->name,

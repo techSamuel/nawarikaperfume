@@ -46,14 +46,18 @@ class RegisteredUserController extends Controller
 
         Auth::login($user);
 
+        $eventId = 'reg_' . $user->id . '_' . bin2hex(random_bytes(4));
+
         \App\Jobs\SendFacebookCapiEvent::send('CompleteRegistration', [
             'content_name' => 'User Registration',
             'status' => 'success'
         ], [
             'name' => $user->name,
             'email' => $user->email,
-        ]);
+        ], $eventId);
 
-        return redirect(route('home', absolute: false))->with('registration_success', true);
+        return redirect(route('home', absolute: false))
+            ->with('registration_success', true)
+            ->with('registration_event_id', $eventId);
     }
 }

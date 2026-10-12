@@ -109,7 +109,7 @@
             content_ids: {!! json_encode(collect($cartItems ?? [])->pluck('product.id')->map(fn($id) => (string) $id)->values()->toArray()) !!},
             content_type: 'product',
             num_items: {{ (int) collect($cartItems ?? [])->sum('quantity') }}
-        });
+        }, { eventID: '{{ $eventId }}' });
     }
 </script>
 @endpush

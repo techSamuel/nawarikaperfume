@@ -117,7 +117,7 @@
             fbq('track', 'CompleteRegistration', {
                 content_name: 'User Registration',
                 status: 'success'
-            });
+            }, { eventID: '{{ session("registration_event_id") }}' });
         }
     </script>
     @endif
@@ -560,13 +560,14 @@
                 .then(data => {
                     if(data.success) {
                         if (typeof fbq === 'function' && data.product) {
+                            const eventOptions = data.event_id ? { eventID: data.event_id } : {};
                             fbq('track', 'AddToCart', {
                                 content_name: data.product.name,
                                 content_ids: [String(data.product.id)],
                                 content_type: 'product',
                                 value: data.product.total,
                                 currency: 'BDT'
-                            });
+                            }, eventOptions);
                         }
                         openCheckoutSidebar();
                     } else {
@@ -601,7 +602,31 @@
                 .catch(err => console.error(err));
         }
 
-        function openCheckoutSidebar() {
+        function initSidebarInputs(sidebar) {
+            const inputs = sidebar.querySelectorAll('#quickCheckoutForm input, #quickCheckoutForm textarea');
+            inputs.forEach(input => {
+                input.addEventListener('focus', () => {
+                    if (window.innerWidth <= 768) {
+                        const wrapper = sidebar.querySelector('.sidebar-checkout-wrapper');
+                        if (wrapper) wrapper.style.bottom = '400px';
+                        setTimeout(() => {
+                            input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }, 200);
+                    }
+                });
+                input.addEventListener('blur', () => {
+                    setTimeout(() => {
+                        const active = document.activeElement;
+                        if (!active || (active.tagName !== 'INPUT' && active.tagName !== 'TEXTAREA')) {
+                            const wrapper = sidebar.querySelector('.sidebar-checkout-wrapper');
+                            if (wrapper) wrapper.style.bottom = '0';
+                        }
+                    }, 100);
+                });
+            });
+        }
+
+        function openCheckoutSidebar(isRefresh = false) {
             refreshNavCartCount();
             document.getElementById('quick-checkout-overlay').classList.add('active');
             document.getElementById('quick-checkout-sidebar').classList.add('active');
@@ -614,17 +639,37 @@
             document.body.style.width = '100%';
             document.body.style.overflow = 'hidden';
 
+            const sidebarUrl = '{{ route("checkout.sidebar") }}' + (isRefresh ? '?refresh=1' : '');
 
-            fetch('{{ route("checkout.sidebar") }}', {
+            fetch(sidebarUrl, {
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest'
                 }
             })
             .then(res => res.text())
             .then(html => {
-                document.getElementById('quick-checkout-sidebar').innerHTML = html;
+                const sidebarContainer = document.getElementById('quick-checkout-sidebar');
+                sidebarContainer.innerHTML = html;
                 const bottomBar = document.querySelector('.bottom-cart-bar');
                 if(bottomBar) bottomBar.style.display = 'none';
+
+                initSidebarInputs(sidebarContainer);
+
+                // Meta Pixel InitiateCheckout with identical deduplication eventID from CAPI
+                const meta = document.getElementById('sidebar-capi-meta');
+                if (meta && meta.dataset.eventId && typeof fbq === 'function') {
+                    try {
+                        fbq('track', 'InitiateCheckout', {
+                            value: parseFloat(meta.dataset.total || 0),
+                            currency: 'BDT',
+                            content_ids: JSON.parse(meta.dataset.contentIds || '[]'),
+                            content_type: 'product',
+                            num_items: parseInt(meta.dataset.numItems || 0)
+                        }, { eventID: meta.dataset.eventId });
+                    } catch (e) {
+                        console.error('Meta Pixel InitiateCheckout error:', e);
+                    }
+                }
             })
             .catch(err => {
                 console.error(err);
@@ -672,8 +717,8 @@
             .then(data => {
                 if(data.success) {
                     refreshNavCartCount();
-                    // Refresh the sidebar content
-                    openCheckoutSidebar();
+                    // Refresh the sidebar content without re-firing InitiateCheckout
+                    openCheckoutSidebar(true);
                 }
             });
         }
@@ -697,8 +742,8 @@
             .then(data => {
                 if(data.success) {
                     refreshNavCartCount();
-                    // Refresh the sidebar content
-                    openCheckoutSidebar();
+                    // Refresh the sidebar content without re-firing InitiateCheckout
+                    openCheckoutSidebar(true);
                 }
             });
         }
@@ -996,10 +1041,11 @@
                 if (data.success) {
                     input.value = '';
                     if (typeof fbq === 'function') {
+                        const eventOptions = data.event_id ? { eventID: data.event_id } : {};
                         fbq('track', 'Subscribe', {
                             currency: 'BDT',
                             value: 0
-                        });
+                        }, eventOptions);
                     }
                     showToast(data.message || 'Subscribed successfully!', 'success');
                 } else {
@@ -1056,13 +1102,14 @@
 
                     // Trigger Meta Pixel AddToWishlist event
                     if (data.added && typeof fbq === 'function') {
+                        const eventOptions = data.event_id ? { eventID: data.event_id } : {};
                         fbq('track', 'AddToWishlist', {
                             content_name: data.product.name,
                             content_ids: [data.product.id],
                             content_type: 'product',
                             value: data.product.price,
                             currency: 'BDT'
-                        });
+                        }, eventOptions);
                     }
 
                     showToast(data.message, data.added ? 'success' : 'info');

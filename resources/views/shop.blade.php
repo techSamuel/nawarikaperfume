@@ -134,9 +134,10 @@
 @push('scripts')
 <script>
     if (typeof fbq === 'function') {
+        const searchOpts = '{{ $searchEventId ?? '' }}' ? { eventID: '{{ $searchEventId }}' } : {};
         fbq('track', 'Search', {
             search_string: '{{ addslashes(request('search')) }}'
-        });
+        }, searchOpts);
     }
 </script>
 @endpush

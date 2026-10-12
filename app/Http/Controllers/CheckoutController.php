@@ -40,18 +40,31 @@ class CheckoutController extends Controller
         $total = $subtotal + $shipping;
         $user = auth()->user();
 
+        // Unique event ID for 1-to-1 Pixel & CAPI deduplication
+        $eventId = 'ic_' . uniqid() . '_' . bin2hex(random_bytes(4));
+
+        $contents = [];
+        foreach ($cartItems as $ci) {
+            $contents[] = [
+                'id' => (string) $ci['product']->id,
+                'quantity' => (int) $ci['quantity'],
+                'item_price' => (float) $ci['price'],
+            ];
+        }
+
         \App\Jobs\SendFacebookCapiEvent::send('InitiateCheckout', [
             'value' => (float) $total,
             'currency' => 'BDT',
-            'content_ids' => array_map('strval', array_keys($cart)),
+            'content_ids' => array_values(array_map('strval', array_keys($cart))),
+            'contents' => $contents,
             'content_type' => 'product',
-            'num_items' => count($cart)
-        ]);
+            'num_items' => (int) count($cart),
+        ], [], $eventId);
 
-        return view('checkout', compact('cartItems', 'subtotal', 'shipping', 'total', 'user'));
+        return view('checkout', compact('cartItems', 'subtotal', 'shipping', 'total', 'user', 'eventId'));
     }
 
-    public function sidebar()
+    public function sidebar(Request $request)
     {
         $cart = session()->get('cart', []);
         
@@ -77,17 +90,33 @@ class CheckoutController extends Controller
         $shipping = $subtotal > 0 ? \App\Services\CartService::calculateShipping($cart, $subtotal) : 0;
         $total = $subtotal + $shipping;
 
-        if (count($cart) > 0) {
+        $eventId = null;
+        $isRefresh = $request->boolean('refresh');
+
+        // Only fire InitiateCheckout on genuine checkout opening, not on quantity +/- adjustments
+        if (count($cart) > 0 && !$isRefresh) {
+            $eventId = 'ic_' . uniqid() . '_' . bin2hex(random_bytes(4));
+
+            $contents = [];
+            foreach ($cartItems as $ci) {
+                $contents[] = [
+                    'id' => (string) $ci['product']->id,
+                    'quantity' => (int) $ci['quantity'],
+                    'item_price' => (float) $ci['price'],
+                ];
+            }
+
             \App\Jobs\SendFacebookCapiEvent::send('InitiateCheckout', [
                 'value' => (float) $total,
                 'currency' => 'BDT',
-                'content_ids' => array_map('strval', array_keys($cart)),
+                'content_ids' => array_values(array_map('strval', array_keys($cart))),
+                'contents' => $contents,
                 'content_type' => 'product',
-                'num_items' => count($cart)
-            ]);
+                'num_items' => (int) count($cart),
+            ], [], $eventId);
         }
 
-        return view('partials.checkout_sidebar', compact('cartItems', 'subtotal', 'shipping', 'total'));
+        return view('partials.checkout_sidebar', compact('cartItems', 'subtotal', 'shipping', 'total', 'eventId'));
     }
 
     public function store(Request $request)

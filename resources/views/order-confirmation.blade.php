@@ -89,7 +89,7 @@
                 content_ids: {!! json_encode($order->items->pluck('product_id')->map(fn($id) => (string) $id)->values()->toArray()) !!},
                 content_type: 'product',
                 order_id: '{{ $order->order_number }}'
-            });
+            }, { eventID: '{{ $order->order_number }}' });
         @else
             // Purchase is held pending manual admin confirmation to prevent fraud/fake order tracking
             fbq('trackCustom', 'OrderSubmitted', {
@@ -98,7 +98,7 @@
                 content_ids: {!! json_encode($order->items->pluck('product_id')->map(fn($id) => (string) $id)->values()->toArray()) !!},
                 content_type: 'product',
                 order_id: '{{ $order->order_number }}'
-            });
+            }, { eventID: '{{ $order->order_number }}' });
         @endif
     }
 </script>

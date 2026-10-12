@@ -59,6 +59,8 @@ class CartController extends Controller
 
         session()->put('cart', $cart);
 
+        $eventId = 'atc_' . $product->id . '_' . bin2hex(random_bytes(6));
+
         \App\Jobs\SendFacebookCapiEvent::send('AddToCart', [
             'content_name' => $product->name,
             'content_ids' => [(string) $product->id],
@@ -66,12 +68,13 @@ class CartController extends Controller
             'value' => (float) (($product->sale_price ?? $product->price) * $qty),
             'currency' => 'BDT',
             'num_items' => (int) $qty
-        ]);
+        ], [], $eventId);
 
         if ($request->ajax() || $request->wantsJson()) {
             return response()->json([
                 'success' => true,
                 'message' => 'Product added to cart!',
+                'event_id' => $eventId,
                 'product' => [
                     'id' => (string) $product->id,
                     'name' => $product->name,

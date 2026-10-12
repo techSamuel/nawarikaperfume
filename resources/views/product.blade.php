@@ -542,13 +542,14 @@
 
 <script>
     if (typeof fbq === 'function') {
+        const viewOpts = '{{ $eventId ?? '' }}' ? { eventID: '{{ $eventId }}' } : {};
         fbq('track', 'ViewContent', {
             content_name: '{{ addslashes($product->name) }}',
             content_ids: ['{{ $product->id }}'],
             content_type: 'product',
             value: {{ $product->sale_price ?? $product->price }},
             currency: 'BDT'
-        });
+        }, viewOpts);
     }
 </script>
 @endpush

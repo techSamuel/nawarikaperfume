@@ -136,7 +136,7 @@ class SettingController extends Controller
         }
 
         $override = [
-            'mail_mailer' => $request->input('mail_mailer'),
+            'mail_mailer' => $request->input('mail_mailer', 'smtp'),
             'mail_host' => $request->input('mail_host'),
             'mail_port' => $request->input('mail_port'),
             'mail_username' => $request->input('mail_username'),

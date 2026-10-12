@@ -30,13 +30,12 @@ class MailConfigService
             $settings = array_merge($settings, array_filter($override, fn($v) => !is_null($v)));
         }
 
-        $mailer = $settings['mail_mailer'] ?? config('mail.default', 'smtp');
-        $host = $settings['mail_host'] ?? config('mail.mailers.smtp.host');
+        $host = $settings['mail_host'] ?? config('mail.mailers.smtp.host') ?: 'smtp.hostinger.com';
         $port = (int) ($settings['mail_port'] ?? config('mail.mailers.smtp.port', 587));
         $username = $settings['mail_username'] ?? config('mail.mailers.smtp.username');
         $password = $settings['mail_password'] ?? config('mail.mailers.smtp.password');
-        $encryption = $settings['mail_encryption'] ?? config('mail.mailers.smtp.encryption');
-        $fromAddress = $settings['mail_from_address'] ?? config('mail.from.address', 'support@nawarika.store');
+        $encryption = $settings['mail_encryption'] ?? config('mail.mailers.smtp.encryption', 'tls');
+        $fromAddress = $settings['mail_from_address'] ?? config('mail.from.address', 'admin@nawarika.store');
         $fromName = $settings['mail_from_name'] ?? config('mail.from.name', config('app.name', 'Nawarika Perfume'));
 
         // Normalize encryption
@@ -44,20 +43,22 @@ class MailConfigService
             $encryption = null;
         }
 
-        Config::set('mail.default', $mailer);
+        Config::set('mail.default', 'smtp');
         Config::set('mail.mailers.smtp.transport', 'smtp');
         Config::set('mail.mailers.smtp.host', $host);
         Config::set('mail.mailers.smtp.port', $port);
         Config::set('mail.mailers.smtp.encryption', $encryption);
         Config::set('mail.mailers.smtp.username', $username);
         Config::set('mail.mailers.smtp.password', $password);
+        Config::set('mail.mailers.smtp.verify_peer', false);
+        Config::set('mail.mailers.smtp.scheme', ($port === 465 || $encryption === 'ssl') ? 'smtps' : null);
 
         Config::set('mail.from.address', $fromAddress);
         Config::set('mail.from.name', $fromName);
 
         // Reset any cached mailer instance in memory
-        Mail::purge($mailer);
         Mail::purge('smtp');
+        Mail::purge();
     }
 
     /**
@@ -71,7 +72,7 @@ class MailConfigService
             $adminEmail = Setting::where('key', 'admin_order_notification_email')->value('value');
             if (empty($adminEmail)) {
                 $adminUser = User::where('role', 'admin')->first();
-                $adminEmail = $adminUser?->email;
+                $adminEmail = $adminUser?->email ?: env('MAIL_ADMIN_NOTIFICATION_EMAIL', 'rodalsoft@gmail.com');
             }
 
             if (empty($adminEmail)) {
@@ -83,7 +84,7 @@ class MailConfigService
 
             // Support comma-separated emails
             $emails = array_map('trim', explode(',', $adminEmail));
-            Mail::to($emails)->send(new AdminNewOrderMail($order));
+            Mail::mailer('smtp')->to($emails)->send(new AdminNewOrderMail($order));
 
             Log::info("Admin new order notification email sent successfully for Order #{$order->order_number} to " . implode(', ', $emails));
             return true;
@@ -119,7 +120,7 @@ class MailConfigService
 
             $order->loadMissing('items.product', 'user');
 
-            Mail::to($recipients)->send(new OrderStatusChangedMail($order, $oldStatus, $newStatus, $changes));
+            Mail::mailer('smtp')->to($recipients)->send(new OrderStatusChangedMail($order, $oldStatus, $newStatus, $changes));
 
             Log::info("Order status changed email sent for Order #{$order->order_number} to " . implode(', ', $recipients) . " (Status: {$oldStatus} -> {$newStatus})");
             return true;
@@ -137,7 +138,7 @@ class MailConfigService
         try {
             self::applyConfig($override);
 
-            Mail::to($toEmail)->send(new TestSmtpMail());
+            Mail::mailer('smtp')->to($toEmail)->send(new TestSmtpMail());
 
             return [
                 'success' => true,

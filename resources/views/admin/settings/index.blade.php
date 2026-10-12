@@ -171,10 +171,18 @@
                     </small>
                 </div>
 
+                <input type="hidden" name="mail_mailer" value="smtp">
                 <div style="background: rgba(14, 165, 233, 0.08); border: 1px solid rgba(14, 165, 233, 0.25); border-radius: 8px; padding: 16px; margin-top: 24px;">
                     <h4 style="margin: 0 0 8px 0; color: #38bdf8; font-size: 0.95rem;">💡 How SMTP Mail Works</h4>
                     <p style="margin: 0; font-size: 0.85rem; color: #cbd5e1; line-height: 1.5;">
-                        Configure your mail server details on the right (Gmail, cPanel Webmail, Brevo, SendGrid, Amazon SES, etc.). Use the "Send Test Email" tool below to confirm your configuration is working in real-time.
+                        Configure your mail server details on the right (Hostinger, Gmail, cPanel Webmail, Brevo, SendGrid, Amazon SES, etc.). Use the "Send Test Email" tool to verify your connection in real-time.
+                    </p>
+                </div>
+
+                <div style="background: rgba(234, 179, 8, 0.12); border: 1px solid rgba(234, 179, 8, 0.35); border-radius: 8px; padding: 14px 16px; margin-top: 16px;">
+                    <strong style="color: #fbbf24; font-size: 0.9rem;">⚠️ Important: Click "Save Settings" Below</strong>
+                    <p style="margin: 6px 0 0 0; font-size: 0.85rem; color: #fef08a; line-height: 1.4;">
+                        After testing, click the yellow <strong>"Save Settings"</strong> button at the bottom of the page to save these credentials for automated order emails!
                     </p>
                 </div>
             </div>
@@ -265,6 +273,7 @@
                             },
                             body: JSON.stringify({
                                 test_email: email,
+                                mail_mailer: 'smtp',
                                 mail_host: document.getElementById('mail_host').value,
                                 mail_port: document.getElementById('mail_port').value,
                                 mail_encryption: document.getElementById('mail_encryption').value,

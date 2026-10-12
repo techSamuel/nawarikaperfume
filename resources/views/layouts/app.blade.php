@@ -59,6 +59,63 @@
             }
         } catch(e) {}
     </script>
+    <script>
+        // Meta Click ID (fbclid) & Browser ID (fbp) Tracking System
+        (function() {
+            try {
+                const urlParams = new URLSearchParams(window.location.search);
+                const urlFbclid = urlParams.get('fbclid');
+                
+                if (urlFbclid) {
+                    const cleanFbclid = urlFbclid.trim();
+                    const fbcString = 'fb.1.' + Date.now() + '.' + cleanFbclid;
+                    try {
+                        localStorage.setItem('_fbclid', cleanFbclid);
+                        localStorage.setItem('_fbc', fbcString);
+                        sessionStorage.setItem('_fbclid', cleanFbclid);
+                        sessionStorage.setItem('_fbc', fbcString);
+                    } catch(e) {}
+                    // Set 90 days cookie (accessible to fbevents.js and backend)
+                    document.cookie = "_fbc=" + encodeURIComponent(fbcString) + "; path=/; max-age=7776000; SameSite=Lax";
+                }
+
+                window.getMetaFbc = function() {
+                    const match = document.cookie.match(/(^|;\s*)_fbc=([^;]+)/);
+                    if (match && match[2]) {
+                        return decodeURIComponent(match[2]);
+                    }
+                    try {
+                        const localFbc = localStorage.getItem('_fbc') || sessionStorage.getItem('_fbc');
+                        if (localFbc) return localFbc;
+                        const savedFbclid = localStorage.getItem('_fbclid') || sessionStorage.getItem('_fbclid');
+                        if (savedFbclid) {
+                            return 'fb.1.' + Date.now() + '.' + savedFbclid;
+                        }
+                    } catch(e) {}
+                    return null;
+                };
+
+                window.getMetaFbp = function() {
+                    const match = document.cookie.match(/(^|;\s*)_fbp=([^;]+)/);
+                    if (match && match[2]) {
+                        return decodeURIComponent(match[2]);
+                    }
+                    try {
+                        return localStorage.getItem('_fbp') || null;
+                    } catch(e) {}
+                    return null;
+                };
+
+                window.getMetaFbclid = function() {
+                    if (urlFbclid) return urlFbclid.trim();
+                    try {
+                        return localStorage.getItem('_fbclid') || sessionStorage.getItem('_fbclid') || null;
+                    } catch(e) {}
+                    return null;
+                };
+            } catch(e) {}
+        })();
+    </script>
     
     @if(isset($settings['primary_color']) || isset($settings['secondary_color']))
     <style>
@@ -548,6 +605,16 @@
                 submitBtn.disabled = true;
                 submitBtn.innerHTML = 'Adding...';
 
+                // Attach Meta Click ID (fbc), Browser ID (fbp), and fbclid for 100% CAPI match
+                try {
+                    const metaFbc = window.getMetaFbc ? window.getMetaFbc() : null;
+                    const metaFbp = window.getMetaFbp ? window.getMetaFbp() : null;
+                    const metaFbclid = window.getMetaFbclid ? window.getMetaFbclid() : null;
+                    if (metaFbc && !formData.has('fbc')) formData.append('fbc', metaFbc);
+                    if (metaFbp && !formData.has('fbp')) formData.append('fbp', metaFbp);
+                    if (metaFbclid && !formData.has('fbclid')) formData.append('fbclid', metaFbclid);
+                } catch(err) {}
+
                 fetch(form.action, {
                     method: 'POST',
                     body: formData,
@@ -582,6 +649,40 @@
                     submitBtn.disabled = false;
                     submitBtn.innerHTML = originalText;
                 });
+            }
+        });
+
+        // Automatically inject Meta tracking fields into standard checkout and cart forms
+        document.addEventListener('submit', function(e) {
+            const form = e.target;
+            if (form && form.action && (form.action.includes('/checkout') || form.action.includes('/cart/add'))) {
+                try {
+                    const metaFbc = window.getMetaFbc ? window.getMetaFbc() : null;
+                    const metaFbp = window.getMetaFbp ? window.getMetaFbp() : null;
+                    const metaFbclid = window.getMetaFbclid ? window.getMetaFbclid() : null;
+
+                    if (metaFbc && !form.querySelector('input[name="fbc"]')) {
+                        const input = document.createElement('input');
+                        input.type = 'hidden';
+                        input.name = 'fbc';
+                        input.value = metaFbc;
+                        form.appendChild(input);
+                    }
+                    if (metaFbp && !form.querySelector('input[name="fbp"]')) {
+                        const input = document.createElement('input');
+                        input.type = 'hidden';
+                        input.name = 'fbp';
+                        input.value = metaFbp;
+                        form.appendChild(input);
+                    }
+                    if (metaFbclid && !form.querySelector('input[name="fbclid"]')) {
+                        const input = document.createElement('input');
+                        input.type = 'hidden';
+                        input.name = 'fbclid';
+                        input.value = metaFbclid;
+                        form.appendChild(input);
+                    }
+                } catch(err) {}
             }
         });
 

@@ -61,6 +61,22 @@ class CartController extends Controller
 
         $eventId = 'atc_' . $product->id . '_' . bin2hex(random_bytes(6));
 
+        $fbc = $request->input('fbc') ?? $request->cookie('_fbc') ?? session('fbc');
+        if (!$fbc && ($request->input('fbclid') ?? $request->query('fbclid') ?? session('fbclid'))) {
+            $fbclid = $request->input('fbclid') ?? $request->query('fbclid') ?? session('fbclid');
+            $fbc = 'fb.1.' . ((int) round(microtime(true) * 1000)) . '.' . trim($fbclid);
+            session(['fbc' => $fbc]);
+        }
+        $fbp = $request->input('fbp') ?? $request->cookie('_fbp') ?? session('fbp');
+
+        $userData = array_filter([
+            'fbc' => $fbc,
+            'fbp' => $fbp,
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+            'event_source_url' => $request->headers->get('referer') ?? url()->previous() ?? $request->url(),
+        ]);
+
         \App\Jobs\SendFacebookCapiEvent::send('AddToCart', [
             'content_name' => $product->name,
             'content_ids' => [(string) $product->id],
@@ -68,7 +84,7 @@ class CartController extends Controller
             'value' => (float) (($product->sale_price ?? $product->price) * $qty),
             'currency' => 'BDT',
             'num_items' => (int) $qty
-        ], [], $eventId);
+        ], $userData, $eventId);
 
         if ($request->ajax() || $request->wantsJson()) {
             return response()->json([

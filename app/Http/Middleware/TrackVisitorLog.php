@@ -14,8 +14,20 @@ class TrackVisitorLog
 
     public function handle(Request $request, Closure $next): Response
     {
-        if ($request->has('fbclid')) {
-            session(['fbclid' => $request->query('fbclid')]);
+        if ($request->filled('fbclid')) {
+            $fbclid = trim($request->query('fbclid'));
+            session(['fbclid' => $fbclid]);
+            $creationTimeMs = (int) round(microtime(true) * 1000);
+            $fbc = 'fb.1.' . $creationTimeMs . '.' . $fbclid;
+            session(['fbc' => $fbc]);
+            // Set 90 days first-party cookie, accessible to JavaScript (httpOnly: false)
+            cookie()->queue(cookie('_fbc', $fbc, 90 * 24 * 60, '/', null, null, false, false, 'Lax'));
+        } elseif ($request->cookie('_fbc') && !session('fbc')) {
+            session(['fbc' => $request->cookie('_fbc')]);
+        }
+
+        if ($request->cookie('_fbp')) {
+            session(['fbp' => $request->cookie('_fbp')]);
         }
 
         $response = $next($request);

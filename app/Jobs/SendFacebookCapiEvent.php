@@ -69,8 +69,8 @@ class SendFacebookCapiEvent implements ShouldQueue
             if (!empty($userData['city'])) {
                 $this->cityHash = hash('sha256', strtolower(str_replace(' ', '', trim($userData['city']))));
             }
-            $this->fbp = $userData['fbp'] ?? (request() ? request()->cookie('_fbp') : null);
-            $this->fbc = $userData['fbc'] ?? (request() ? request()->cookie('_fbc') : null);
+            $this->fbp = $this->resolveFbp($userData['fbp'] ?? null);
+            $this->fbc = $this->resolveFbc($userData['fbc'] ?? null);
         } else {
             // Live web visitor request fallback
             $this->eventSourceUrl = request() ? request()->url() : config('app.url');
@@ -94,9 +94,89 @@ class SendFacebookCapiEvent implements ShouldQueue
                     $this->userNameHash = hash('sha256', strtolower($parts[0]));
                 }
             }
-            $this->fbp = request() ? request()->cookie('_fbp') : null;
-            $this->fbc = request() ? request()->cookie('_fbc') : null;
+            $this->fbp = $this->resolveFbp();
+            $this->fbc = $this->resolveFbc();
         }
+    }
+
+    /**
+     * Resolve valid Meta Click ID (_fbc).
+     * Format: fb.1.{creation_time_ms}.{fbclid}
+     * Must be unhashed.
+     */
+    protected function resolveFbc(?string $explicit = null): ?string
+    {
+        if (!empty($explicit)) {
+            $trimmed = trim($explicit);
+            if (str_starts_with($trimmed, 'fb.')) {
+                return $trimmed;
+            }
+            return 'fb.1.' . ((int) round(microtime(true) * 1000)) . '.' . $trimmed;
+        }
+
+        if (request()) {
+            $cookieFbc = request()->cookie('_fbc');
+            if (!empty($cookieFbc) && str_starts_with($cookieFbc, 'fb.')) {
+                return $cookieFbc;
+            }
+            $inputFbc = request()->input('fbc') ?? request()->header('X-FBC');
+            if (!empty($inputFbc) && str_starts_with($inputFbc, 'fb.')) {
+                return $inputFbc;
+            }
+        }
+
+        if (session() && session()->has('fbc')) {
+            $sessionFbc = session('fbc');
+            if (!empty($sessionFbc) && str_starts_with($sessionFbc, 'fb.')) {
+                return $sessionFbc;
+            }
+        }
+
+        $fbclid = null;
+        if (request()) {
+            $fbclid = request()->input('fbclid') ?? request()->query('fbclid');
+        }
+        if (empty($fbclid) && session()) {
+            $fbclid = session('fbclid');
+        }
+
+        if (!empty($fbclid)) {
+            $formattedFbc = 'fb.1.' . ((int) round(microtime(true) * 1000)) . '.' . trim($fbclid);
+            if (session()) {
+                session(['fbc' => $formattedFbc]);
+            }
+            return $formattedFbc;
+        }
+
+        return null;
+    }
+
+    /**
+     * Resolve valid Meta Browser ID (_fbp).
+     * Must be unhashed.
+     */
+    protected function resolveFbp(?string $explicit = null): ?string
+    {
+        if (!empty($explicit)) {
+            return trim($explicit);
+        }
+
+        if (request()) {
+            $cookieFbp = request()->cookie('_fbp');
+            if (!empty($cookieFbp)) {
+                return $cookieFbp;
+            }
+            $inputFbp = request()->input('fbp') ?? request()->header('X-FBP');
+            if (!empty($inputFbp)) {
+                return $inputFbp;
+            }
+        }
+
+        if (session() && session()->has('fbp')) {
+            return session('fbp');
+        }
+
+        return null;
     }
 
     /**

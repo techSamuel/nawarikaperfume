@@ -175,11 +175,12 @@ class CheckoutController extends Controller
             $timezone = $request->header('X-Timezone') ?? $request->cookie('visitor_tz') ?? 'Asia/Dhaka';
 
             // Capture Meta Pixel Browser ID (_fbp) and Click ID (_fbc)
-            $fbp = $request->cookie('_fbp');
-            $fbc = $request->cookie('_fbc');
-            if (!$fbc && (session('fbclid') || $request->query('fbclid'))) {
-                $fbclid = $request->query('fbclid') ?? session('fbclid');
-                $fbc = 'fb.1.' . (time() * 1000) . '.' . $fbclid;
+            $fbp = $request->input('fbp') ?? $request->cookie('_fbp') ?? session('fbp');
+            $fbc = $request->input('fbc') ?? $request->cookie('_fbc') ?? session('fbc');
+            if (!$fbc && ($request->input('fbclid') ?? $request->query('fbclid') ?? session('fbclid'))) {
+                $fbclid = $request->input('fbclid') ?? $request->query('fbclid') ?? session('fbclid');
+                $fbc = 'fb.1.' . ((int) round(microtime(true) * 1000)) . '.' . trim($fbclid);
+                session(['fbc' => $fbc]);
             }
 
             $userEmail = auth()->user()?->email ?? $request->email ?? null;

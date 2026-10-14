@@ -10,7 +10,7 @@ class OrderController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Order::with('user');
+        $query = Order::with(['user', 'items']);
 
         if ($request->filled('status')) {
             $query->where('status', $request->status);
@@ -286,5 +286,74 @@ class OrderController extends Controller
         $order->delete();
 
         return redirect()->route('admin.orders.index')->with('success', 'Order #' . $orderNumber . ' has been deleted successfully.');
+    }
+
+    public function bulkStatus(Request $request)
+    {
+        $request->validate([
+            'order_ids' => 'required|array|min:1',
+            'order_ids.*' => 'exists:orders,id',
+            'status' => 'required|in:pending,processing,confirm,shipped,delivered,cancelled',
+        ]);
+
+        $orders = Order::with(['items.product', 'user'])->whereIn('id', $request->order_ids)->get();
+        $updatedCount = 0;
+
+        foreach ($orders as $order) {
+            $oldStatus = $order->status;
+            if ($oldStatus === $request->status) {
+                continue;
+            }
+
+            $order->update(['status' => $request->status]);
+
+            if ($request->status === 'cancelled' && $oldStatus !== 'cancelled') {
+                $this->handleStockAndCapiCancel($order);
+            }
+
+            if ($request->status === 'confirm' && $oldStatus !== 'confirm') {
+                $this->handleCapiPurchase($order);
+            }
+
+            // Send email update to customer if status changed
+            $changes = [
+                'Status' => [
+                    'from' => ucfirst($oldStatus),
+                    'to' => ucfirst($request->status)
+                ]
+            ];
+            try {
+                app(\App\Services\MailConfigService::class)->sendOrderStatusChangedNotification(
+                    $order->fresh(['items.product', 'user']),
+                    $oldStatus,
+                    $request->status,
+                    $changes
+                );
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::error("Failed to send order status changed notification for order #{$order->order_number}: " . $e->getMessage());
+            }
+
+            $updatedCount++;
+        }
+
+        return back()->with('success', "Order status updated to " . ucfirst($request->status) . " for {$updatedCount} order(s).");
+    }
+
+    public function bulkDelete(Request $request)
+    {
+        $request->validate([
+            'order_ids' => 'required|array|min:1',
+            'order_ids.*' => 'exists:orders,id',
+        ]);
+
+        $orders = Order::with('items')->whereIn('id', $request->order_ids)->get();
+        $deletedCount = $orders->count();
+
+        foreach ($orders as $order) {
+            $order->items()->delete();
+            $order->delete();
+        }
+
+        return back()->with('success', "Successfully deleted {$deletedCount} order(s).");
     }
 }

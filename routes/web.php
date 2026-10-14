@@ -116,6 +116,8 @@ Route::middleware(['auth', \App\Http\Middleware\AdminMiddleware::class])
         Route::delete('/product-reviews/{review}', [ProductReviewController::class, 'destroy'])->name('product-reviews.destroy');
 
         Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
+        Route::post('/orders/bulk-status', [OrderController::class, 'bulkStatus'])->name('orders.bulk-status');
+        Route::post('/orders/bulk-delete', [OrderController::class, 'bulkDelete'])->name('orders.bulk-delete');
         Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
         Route::put('/orders/{order}', [OrderController::class, 'update'])->name('orders.update');
         Route::patch('/orders/{order}/status', [OrderController::class, 'updateStatus'])->name('orders.update-status');

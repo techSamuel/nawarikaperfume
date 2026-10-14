@@ -334,7 +334,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (data) lines.push(data);
             });
 
-            const fullText = lines.join('\n');
+            const fullText = lines.join('\n\n');
             copyToClipboard(fullText, () => {
                 showToast('Copied ' + checked.length + ' order(s) details to clipboard!');
                 const originalText = bulkCopyText.textContent;
@@ -363,7 +363,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (data) lines.push(data);
             });
 
-            const fullText = lines.join('\n');
+            const fullText = lines.join('\n\n');
             copyToClipboard(fullText, () => {
                 showToast('Copied ' + checked.length + ' order(s) in Excel Tab format!');
             }, () => {
